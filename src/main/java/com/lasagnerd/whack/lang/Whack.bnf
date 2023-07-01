@@ -1,0 +1,52 @@
+{
+  parserClass="com.lasagnerd.whack.lang.WhackParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Whack"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.lasagnerd.whack.lang.psi"
+  psiImplPackage="com.lasagnerd.whack.lang.psi.impl"
+
+  elementTypeHolderClass="com.lasagnerd.whack.lang.psi.WhackTypes"
+  elementTypeClass="com.lasagnerd.whack.lang.psi.WhackElementType"
+  tokenTypeClass="com.lasagnerd.whack.lang.psi.WhackTokenType"
+
+  tokens=[
+    OPERATOR_AND='and'
+    OPERATOR_OR='or'
+    OPERATOR_NOT='not'
+
+    SPACE='regexp:[ \t]+'
+    BOOL='regexp:(True|False)'
+    IDENTIFIER='regexp:[A-Za-z_][A-Za-z0-9_]*'
+
+    OPERATOR_EQUALITY='=='
+    OPERATOR_INEQUALITY='!='
+  ]
+  name('.*expression') = expression
+  extends('.*_expression.*') = expression
+  extends('^binary.*') = binary_operator
+  extends('^unary.*') = unary_operator
+}
+
+whackFile ::= expression
+
+expression ::= binary_expression
+        | unary_expression
+        | primary
+
+binary_expression                     ::= expression binary_operator expression
+binary_operator                       ::= binary_operator_or | binary_operator_and | binary_operator_equality | binary_operator_inequality
+binary_operator_or                    ::= OPERATOR_OR
+binary_operator_and                   ::= OPERATOR_AND
+binary_operator_equality              ::= OPERATOR_EQUALITY
+binary_operator_inequality            ::= OPERATOR_INEQUALITY
+
+unary_expression         ::= unary_operator expression
+unary_operator           ::= unary_operator_not
+unary_operator_not       ::= OPERATOR_NOT
+
+private primary          ::= reference_expression | bool_literal_expression
+bool_literal_expression  ::= BOOL
+reference_expression     ::= IDENTIFIER

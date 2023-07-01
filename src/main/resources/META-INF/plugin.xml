@@ -1,0 +1,75 @@
+<idea-plugin>
+    <id>com.your.company.unique.plugin.id</id>
+    <name>Whack</name>
+    <version>1.0</version>
+    <vendor email="lasagnerd@googlemail.com" url="http://lasagnerd.com">Lasagnerd</vendor>
+
+    <description><![CDATA[
+      Whacky code for whacky plugins. This is just a playground
+    ]]></description>
+
+    <change-notes><![CDATA[
+      No changes.
+    ]]>
+    </change-notes>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
+    <idea-version since-build="173.0"/>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.properties</depends>
+    <depends>org.jetbrains.kotlin</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <multiHostInjector implementation="com.lasagnerd.whack.injection.IfStatementExpressionInjector"/>
+        <lang.foldingBuilder language="XML"
+                             implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"/>
+        <!--suppress PluginXmlValidity -->
+        <lang.foldingBuilder language="Ini"
+                             implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"/>
+        <!--suppress PluginXmlValidity -->
+        <lang.foldingBuilder language="YAML"
+                             implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"/>
+
+        <fileType name="whack"
+                  language="Whack"
+                  fieldName="INSTANCE"
+                  extensions="whack"
+                  implementationClass="com.lasagnerd.whack.lang.WhackFileType"/>
+        <lang.parserDefinition language="Whack" implementationClass="com.lasagnerd.whack.lang.WhackParserDefinition"/>
+
+        <fileType name="preprocessor"
+                  language="Preprocessor"
+                  fieldName="INSTANCE"
+                  extensions="pre"
+                  implementationClass="com.lasagnerd.whack.preprocessor.lang.PreprocessorFileType"/>
+        <lang.parserDefinition language="Preprocessor" implementationClass="com.lasagnerd.whack.preprocessor.lang.PreprocessorParserDefinition"/>
+
+        <lang.syntaxHighlighterFactory language="Whack"
+                                       implementationClass="com.lasagnerd.whack.lang.WhackSyntaxHighlighterFactory"/>
+        <annotator language="XML" implementationClass="com.lasagnerd.whack.injection.IfStatementAnnotator"/>
+        <psi.referenceContributor implementation="com.lasagnerd.whack.completion.PropertiesReferenceContributor"/>
+        <completion.contributor language="Whack"
+                                implementationClass="com.lasagnerd.whack.completion.WhackCompletionContributor"/>
+        <lang.elementManipulator forClass="com.lasagnerd.whack.lang.psi.impl.WhackReferenceExpressionImpl"
+                                 implementationClass="com.lasagnerd.whack.refactoring.WhackReferenceManipulator"/>
+        <annotator language="Whack" implementationClass="com.lasagnerd.whack.analysis.WhackAnnotator"/>
+        <diff.DiffTool implementation="com.lasagnerd.whack.diff.WhackDiffTool"/>
+    </extensions>
+
+    <actions>
+        <action id="com.lasagnerd.whack.diff.OpenDiffViewAction" class="com.lasagnerd.whack.diff.OpenDiffViewAction"
+                text="Compare to Preprocessed File ..."
+                description="Compares the current file with its preprocessed version"
+                icon="AllIcons.Actions.Diff">
+
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+
+        </action>
+
+    </actions>
+</idea-plugin>

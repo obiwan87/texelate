@@ -1,0 +1,41 @@
+{
+  parserClass="com.lasagnerd.whack.preprocessor.lang.PreprocessorParser"
+  parserUtilClass="com.lasagnerd.whack.preprocessor.lang.PreprocessorParserUtil"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Preprocessor"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.lasagnerd.whack.preprocessor.lang.psi"
+  psiImplPackage="com.lasagnerd.whack.preprocessor.lang.psi.impl"
+
+  elementTypeHolderClass="com.lasagnerd.whack.preprocessor.lang.psi.PreprocessorTypes"
+  elementTypeClass="com.lasagnerd.whack.preprocessor.lang.psi.PreprocessorElementType"
+  tokenTypeClass="com.lasagnerd.whack.preprocessor.lang.psi.PreprocessorTokenType"
+
+  tokens=[
+    WHITE_SPACE='regexp:\s+'
+    XML_OPENING_IF='regexp:<!--\?if[^\r\n]*-->'
+    XML_CLOSING_IF='regexp:<!--\?endif[^\r\n]*-->'
+    HASHTAG_OPENING_IF='regexp:#\?if[^\n\r]*'
+    HASHTAG_CLOSING_IF='regexp:#\?endif[^\n\r]*'
+    SEMICOLON_OPENING_IF='regexp:;\?if[^\n\r]*'
+    SEMICOLON_CLOSING_IF='regexp:;\?endif[^\n\r]*'
+    ANY = 'regexp:.+'
+  ]
+
+  extends(".*if_block") = if_block
+}
+
+preprocessorFile ::= item*
+private item ::= text_block | if_block
+if_block ::=  xml_if_block |
+              hashtag_if_block |
+              semicolon_if_block
+
+semicolon_if_block ::= SEMICOLON_OPENING_IF item* SEMICOLON_CLOSING_IF
+hashtag_if_block ::= HASHTAG_OPENING_IF item* HASHTAG_CLOSING_IF
+xml_if_block ::= XML_OPENING_IF item* XML_CLOSING_IF
+
+text_block ::= (WHITE_SPACE | ANY)+
+
