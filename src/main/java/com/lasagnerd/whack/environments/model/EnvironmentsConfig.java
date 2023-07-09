@@ -1,11 +1,10 @@
 package com.lasagnerd.whack.environments.model;
 
-import com.jgoodies.common.collect.ArrayListModel;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class EnvironmentsConfig {
-    List<Environment> environments = new ArrayListModel<>();
+    List<Environment> environments = new ArrayList<>();
 
     public EnvironmentsConfig() {
     }

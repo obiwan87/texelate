@@ -27,7 +27,7 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        EnvironmentsToolWindow environmentsToolWindowContent = new EnvironmentsToolWindow(toolWindow);
+        EnvironmentsToolWindow environmentsToolWindowContent = new EnvironmentsToolWindow(project);
         Content content = ContentFactory.getInstance().createContent(environmentsToolWindowContent.getContentPanel(),
                 "",
                 false);
@@ -38,8 +38,20 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
     private static class EnvironmentsToolWindow {
         SimpleToolWindowPanel contentPanel = new SimpleToolWindowPanel(true, false);
 
-        private EnvironmentsToolWindow(ToolWindow toolWindow) {
-            Tree tree = createTree(toolWindow);
+        private EnvironmentsToolWindow(Project project) {
+            DefaultTreeModel model = project.getService(EnvironmentsModelService.class).getTreeModel();
+
+            Tree tree = new Tree(model);
+            tree.setRootVisible(false);
+            tree.setShowsRootHandles(true);
+            tree.setCellRenderer(new NodeRenderer());
+            tree.getEmptyText().appendText("No environments configured", SimpleTextAttributes.GRAYED_ATTRIBUTES);
+            tree.getEmptyText().appendSecondaryText("Add environment", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Clicked");
+                }
+            });
 
             RemoveNodeAction removeNodeAction = new RemoveNodeAction("Remove", "Remove selected node", AllIcons.General.Remove);
             removeNodeAction.tree = tree;
@@ -82,6 +94,15 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
                 DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
                 if (node != null) {
+                    int nodeIndex = node.getParent().getIndex(node);
+                    NodeTreeNode parentNode = (NodeTreeNode) node.getParent();
+
+                    if(parentNode.node() instanceof ConfigNode configNode) {
+                        configNode.childrenNodes.remove(nodeIndex);
+                    } else if(parentNode.node() instanceof EnvironmentNode environmentNode) {
+                        environmentNode.childrenNodes.remove(nodeIndex);
+                    }
+
                     model.removeNodeFromParent(node);
                 }
             }
@@ -108,31 +129,13 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
 
                 Environment environment = new Environment("new");
                 EnvironmentNode environmentNode = new EnvironmentNode(environment);
-                model.insertNodeInto(new NodeTreeNode(environmentNode), root, configNode.getChildCount());
+                int index = configNode.getChildCount();
+
+                configNode.childrenNodes.add(environmentNode);
+
+                model.insertNodeInto(new NodeTreeNode(environmentNode), root, index);
+
             }
-        }
-
-        private Tree createTree(ToolWindow toolWindow) {
-
-            EnvironmentsConfig environmentConfig = loadConfig();
-
-            NodeTreeNode rootNode = new NodeTreeNode(new ConfigNode(environmentConfig));
-
-            DefaultTreeModel model = new DefaultTreeModel(rootNode);
-
-            Tree tree = new Tree(model);
-            tree.setRootVisible(false);
-            tree.setShowsRootHandles(true);
-            tree.setCellRenderer(new NodeRenderer());
-            tree.getEmptyText().appendText("No environments configured", SimpleTextAttributes.GRAYED_ATTRIBUTES);
-            tree.getEmptyText().appendSecondaryText("Add environment", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("Clicked");
-                }
-            });
-
-            return tree;
         }
 
         @NotNull

@@ -60,8 +60,12 @@
         <annotator language="Whack" implementationClass="com.lasagnerd.whack.analysis.WhackAnnotator"/>
         <diff.DiffTool implementation="com.lasagnerd.whack.diff.WhackDiffTool"/>
 
-        <projectService serviceImplementation="com.lasagnerd.whack.environments.model.EnvironmentsConfigState"/>
-        <projectService serviceImplementation="com.lasagnerd.whack.environments.model.EnvironmentsModelService"/>
+        <projectService serviceImplementation="com.lasagnerd.whack.environments.model.EnvironmentsConfigPersistentState"
+                        id="com.lasagnerd.whack.environments.model.EnvironmentsConfigPersistentState"/>
+
+        <projectService serviceImplementation="com.lasagnerd.whack.environments.model.EnvironmentsModelService"
+                        order="after com.lasagnerd.whack.environments.model.EnvironmentsConfigPersistentState"/>
+
         <toolWindow factoryClass="com.lasagnerd.whack.environments.toolWindow.EnvironmentsToolWindowFactory"
                     id="Environments"
                     secondary="true"

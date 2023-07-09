@@ -7,6 +7,9 @@ public class Environment {
     String name;
     List<String> paths = new ArrayList<>();
 
+    public Environment() {
+    }
+
     public Environment(String name) {
         this.name = name;
 
