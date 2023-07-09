@@ -37,7 +37,7 @@ public class EnvironmentNode extends SimpleNodeWrapper<SimpleNode> {
             public SimpleNode @NotNull [] getChildren() {
                 return children.stream()
                         .map(c -> (SimpleNodeWrapper<?>) c)
-                        .map(simpleNodeWrapper -> simpleNodeWrapper.createSimpleNode())
+                        .map(SimpleNodeWrapper::createSimpleNode)
                         .toArray(SimpleNode[]::new);
             }
         };
