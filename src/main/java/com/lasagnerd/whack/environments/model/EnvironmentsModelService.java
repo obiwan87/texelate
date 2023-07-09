@@ -21,21 +21,30 @@ public class EnvironmentsModelService implements TreeModelListener {
     }
 
     public DefaultTreeModel getTreeModel() {
-        if (defaultTreeModel == null) {;
-            ConfigNode root = new ConfigNode(persistentState.environmentConfig);
-            defaultTreeModel = new DefaultTreeModel(new NodeTreeNode(root));
+        if (defaultTreeModel == null) {
+            ;
+            defaultTreeModel = new DefaultTreeModel(new EnvironmentsConfigNode(persistentState.environmentConfig));
             defaultTreeModel.addTreeModelListener(this);
         }
         return defaultTreeModel;
     }
 
-    public void addEnvironment(String name) {
+    public EnvironmentsConfig getEnvironmentsConfig() {
+        return persistentState.environmentConfig;
+    }
 
+    public void addEnvironment(String name) {
 
     }
 
-    public void addItemToEnvironment(String environmentName, String path) {
-
+    public void addItemToEnvironment(String environmentName, final String path) {
+        EnvironmentsConfigNode environmentsConfigNode = (EnvironmentsConfigNode) getTreeModel().getRoot();
+        environmentsConfigNode.environmentNodes().stream().filter(node -> node.getEnvironmentName().equals(environmentName))
+                .findFirst()
+                .ifPresent(environmentNode -> {
+                    environmentNode.add(new FilePathNode(path));
+                    getTreeModel().reload(environmentNode);
+                });
     }
 
     public void removeEnvironment(String name) {
@@ -75,22 +84,22 @@ public class EnvironmentsModelService implements TreeModelListener {
     }
 
     private void updateModel() {
-        NodeTreeNode root = (NodeTreeNode) getTreeModel().getRoot();
-        ConfigNode configNode = root.node();
-        readState(configNode);
+        EnvironmentsConfigNode environmentsConfigNode = (EnvironmentsConfigNode) getTreeModel().getRoot();
+        readState(environmentsConfigNode);
     }
 
-    private void readState(ConfigNode configNode) {
+    private void readState(EnvironmentsConfigNode configNode) {
         EnvironmentsConfig environmentConfig = new EnvironmentsConfig();
         List<Environment> environments = new ArrayList<>();
-        for (EnvironmentNode childrenNode : configNode.childrenNodes) {
-            Environment environment = new Environment(childrenNode.getName());
-            for (PathNode pathNode : childrenNode.childrenNodes) {
-                environment.getPaths().add(pathNode.getPath());
-            }
+        configNode.children().asIterator().forEachRemaining(child -> {
+            EnvironmentNode environmentNode = (EnvironmentNode) child;
+            Environment environment = new Environment(environmentNode.getEnvironmentName());
+            environmentNode.children().asIterator().forEachRemaining(filePathNode -> {
+                environment.getPaths().add(((FilePathNode) filePathNode).getFilePath());
+            });
             environments.add(environment);
             System.out.println("Adding environment: " + environment.getName());
-        }
+        });
         environmentConfig.setEnvironments(environments);
         persistentState.environmentConfig = environmentConfig;
     }

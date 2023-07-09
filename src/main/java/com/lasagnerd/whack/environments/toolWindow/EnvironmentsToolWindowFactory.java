@@ -13,15 +13,16 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
-import com.lasagnerd.whack.environments.model.*;
+import com.lasagnerd.whack.environments.model.Environment;
+import com.lasagnerd.whack.environments.model.EnvironmentNode;
+import com.lasagnerd.whack.environments.model.EnvironmentsModelService;
+import com.lasagnerd.whack.environments.model.SimpleNodeWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAware {
 
@@ -46,12 +47,7 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             tree.setShowsRootHandles(true);
             tree.setCellRenderer(new NodeRenderer());
             tree.getEmptyText().appendText("No environments configured", SimpleTextAttributes.GRAYED_ATTRIBUTES);
-            tree.getEmptyText().appendSecondaryText("Add environment", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("Clicked");
-                }
-            });
+            tree.getEmptyText().appendSecondaryText("Add environment", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, e -> System.out.println("Clicked"));
 
             RemoveNodeAction removeNodeAction = new RemoveNodeAction("Remove", "Remove selected node", AllIcons.General.Remove);
             removeNodeAction.tree = tree;
@@ -94,15 +90,6 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
                 DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
                 if (node != null) {
-                    int nodeIndex = node.getParent().getIndex(node);
-                    NodeTreeNode parentNode = (NodeTreeNode) node.getParent();
-
-                    if(parentNode.node() instanceof ConfigNode configNode) {
-                        configNode.childrenNodes.remove(nodeIndex);
-                    } else if(parentNode.node() instanceof EnvironmentNode environmentNode) {
-                        environmentNode.childrenNodes.remove(nodeIndex);
-                    }
-
                     model.removeNodeFromParent(node);
                 }
             }
@@ -124,39 +111,14 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             public void actionPerformed(@NotNull AnActionEvent e) {
                 Tree tree = this.tree;
                 DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-                NodeTreeNode root = (NodeTreeNode) model.getRoot();
-                ConfigNode configNode = root.node();
+                SimpleNodeWrapper<?> root = (SimpleNodeWrapper<?>) model.getRoot();
 
                 Environment environment = new Environment("new");
                 EnvironmentNode environmentNode = new EnvironmentNode(environment);
-                int index = configNode.getChildCount();
-
-                configNode.childrenNodes.add(environmentNode);
-
-                model.insertNodeInto(new NodeTreeNode(environmentNode), root, index);
+                int index = root.getChildCount();
+                model.insertNodeInto(environmentNode, root, index);
 
             }
-        }
-
-        @NotNull
-        private static EnvironmentsConfig loadConfig() {
-            Environment devEnv = new Environment("dev");
-            devEnv.getPaths().add("features/features_dev.properties");
-            devEnv.getPaths().add("environments/dev/");
-
-            Environment stageEnv = new Environment("stage");
-            stageEnv.getPaths().add("features/features_stage.properties");
-            stageEnv.getPaths().add("environments/stage/");
-
-            Environment prodEnv = new Environment("prod");
-            prodEnv.getPaths().add("features/features_prod.properties");
-            prodEnv.getPaths().add("environments/prod/");
-
-            EnvironmentsConfig environmentConfig = new EnvironmentsConfig();
-            environmentConfig.getEnvironments().add(devEnv);
-            environmentConfig.getEnvironments().add(stageEnv);
-            environmentConfig.getEnvironments().add(prodEnv);
-            return environmentConfig;
         }
 
         public JPanel getContentPanel() {

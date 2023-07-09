@@ -2,27 +2,47 @@ package com.lasagnerd.whack.environments.model;
 
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.treeStructure.SimpleNode;
-import com.lasagnerd.whack.environments.toolWindow.EnvironmentsToolWindowFactory;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
-public class EnvironmentNode extends SimpleNode {
-    public List<PathNode> childrenNodes = new ArrayList<>();
-
-    public EnvironmentNode(Environment environment) {
-        super();
-        List<String> paths = environment.getPaths();
-        for (String path : paths) {
-            childrenNodes.add(new PathNode(path));
-        }
-        this.getPresentation().addText(environment.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+public class EnvironmentNode extends SimpleNodeWrapper<SimpleNode> {
+    public String getEnvironmentName() {
+        return environmentName;
     }
 
+    public void setEnvironmentName(String environmentName) {
+        this.environmentName = environmentName;
+    }
+
+    private String environmentName;
+    public EnvironmentNode(Environment environment) {
+        super();
+        this.setEnvironmentName(environment.getName());
+        children = new Vector<>();
+        List<String> paths = environment.getPaths();
+        for (String path : paths) {
+            FilePathNode childNode = new FilePathNode(path);
+            childNode.setParent(this);
+            children.add(childNode);
+        }
+    }
 
     @Override
-    public SimpleNode @NotNull [] getChildren() {
-        return childrenNodes.toArray(new SimpleNode[0]);
+    public SimpleNode createSimpleNode() {
+        SimpleNode simpleNode = new SimpleNode() {
+            @Override
+            public SimpleNode @NotNull [] getChildren() {
+                return children.stream()
+                        .map(c -> (SimpleNodeWrapper<?>) c)
+                        .map(simpleNodeWrapper -> simpleNodeWrapper.createSimpleNode())
+                        .toArray(SimpleNode[]::new);
+            }
+        };
+
+        simpleNode.getPresentation().addText(getEnvironmentName(),
+                SimpleTextAttributes.REGULAR_ATTRIBUTES);
+        return simpleNode;
     }
 }

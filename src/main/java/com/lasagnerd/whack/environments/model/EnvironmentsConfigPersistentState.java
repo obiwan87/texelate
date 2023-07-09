@@ -15,10 +15,6 @@ import org.jetbrains.annotations.Nullable;
 public class EnvironmentsConfigPersistentState implements PersistentStateComponent<EnvironmentsConfigPersistentState> {
     public EnvironmentsConfig environmentConfig = new EnvironmentsConfig();
 
-    public static EnvironmentsConfigPersistentState getInstance(Project project) {
-        return project.getService(EnvironmentsConfigPersistentState.class);
-    }
-
     @Nullable
     @Override
     public EnvironmentsConfigPersistentState getState() {
