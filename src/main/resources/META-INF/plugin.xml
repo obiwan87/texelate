@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>com.your.company.unique.plugin.id</id>
+    <id>com.lasagnerd.whack</id>
     <name>Whack</name>
     <version>1.0</version>
     <vendor email="lasagnerd@googlemail.com" url="http://lasagnerd.com">Lasagnerd</vendor>
@@ -52,24 +52,49 @@
         <lang.syntaxHighlighterFactory language="Whack"
                                        implementationClass="com.lasagnerd.whack.lang.WhackSyntaxHighlighterFactory"/>
         <annotator language="XML" implementationClass="com.lasagnerd.whack.injection.IfStatementAnnotator"/>
-        <psi.referenceContributor implementation="com.lasagnerd.whack.completion.PropertiesReferenceContributor"/>
+        <psi.referenceContributor implementation="com.lasagnerd.whack.completion.PropertiesReferenceContributor" language="Whack"/>
         <completion.contributor language="Whack"
                                 implementationClass="com.lasagnerd.whack.completion.WhackCompletionContributor"/>
         <lang.elementManipulator forClass="com.lasagnerd.whack.lang.psi.impl.WhackReferenceExpressionImpl"
                                  implementationClass="com.lasagnerd.whack.refactoring.WhackReferenceManipulator"/>
         <annotator language="Whack" implementationClass="com.lasagnerd.whack.analysis.WhackAnnotator"/>
         <diff.DiffTool implementation="com.lasagnerd.whack.diff.WhackDiffTool"/>
+
+        <projectService serviceImplementation="com.lasagnerd.whack.environments.model.EnvironmentsConfigState"/>
+        <projectService serviceImplementation="com.lasagnerd.whack.environments.model.EnvironmentsModelService"/>
+        <toolWindow factoryClass="com.lasagnerd.whack.environments.toolWindow.EnvironmentsToolWindowFactory"
+                    id="Environments"
+                    secondary="true"
+                    icon="/whack_icon_dark.svg">
+
+        </toolWindow>
     </extensions>
+
 
     <actions>
         <action id="com.lasagnerd.whack.diff.OpenDiffViewAction" class="com.lasagnerd.whack.diff.OpenDiffViewAction"
                 text="Compare to Preprocessed File ..."
                 description="Compares the current file with its preprocessed version"
                 icon="AllIcons.Actions.Diff">
-
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-
         </action>
+
+
+        <action class="com.intellij.openapi.actionSystem.Separator"
+                id="com.lasagnerd.whack.environments.actions.AddToEnvironmentActionGroup.separator">
+            <add-to-group group-id="ProjectViewPopupMenu"
+                          anchor="before"
+                          relative-to-action="com.lasagnerd.whack.environments.actions.AddToEnvironmentActionGroup"/>
+        </action>
+
+        <group id="com.lasagnerd.whack.environments.actions.AddToEnvironmentActionGroup"
+               class="com.lasagnerd.whack.environments.actions.AddToEnvironmentActionGroup"
+               text="Add To Environment ..."
+               popup="true"
+               description="Adds a file or directory to an environment"
+        >
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="WeighingNewGroup"/>
+        </group>
 
     </actions>
 </idea-plugin>

@@ -12,4 +12,8 @@ A whack IntelliJ Plugin
   
 - Diff Extensions
   * ChangeDiffViewerWrapperProvider https://github.com/JetBrains/intellij-community/blob/0e2aa4030ee763c9b0c828f0b5119f4cdcc66f35/plugins/svn4idea/src/org/jetbrains/idea/svn/difftool/SvnChangeDiffViewerProvider.java
-  * 
+
+# Kotlin UI DSL
+
+Used to create UIs in Kotlin. Especially useful for creating settings windows and forms.
+
