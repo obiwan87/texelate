@@ -10,6 +10,7 @@ import com.intellij.openapi.util.NlsActions;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
@@ -80,7 +81,9 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
         public static class RemoveNodeAction extends AnAction {
             Tree tree;
 
-            public RemoveNodeAction(@Nullable @NlsActions.ActionText String text, @Nullable @NlsActions.ActionDescription String description, @Nullable Icon icon) {
+            public RemoveNodeAction(@Nullable @NlsActions.ActionText String text,
+                                    @Nullable @NlsActions.ActionDescription String description,
+                                    @Nullable Icon icon) {
                 super(text, description, icon);
             }
 
@@ -121,8 +124,9 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             }
         }
 
-        public JPanel getContentPanel() {
-            return contentPanel;
+        public JComponent getContentPanel() {
+
+            return new JBScrollPane(contentPanel);
         }
 
     }
