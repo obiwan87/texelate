@@ -2,6 +2,7 @@ package com.lasagnerd.whack.environments.model;
 
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.treeStructure.SimpleNode;
+import com.lasagnerd.whack.Icons;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -43,6 +44,7 @@ public class EnvironmentNode extends SimpleNodeWrapper<SimpleNode> {
 
         simpleNode.getPresentation().addText(getEnvironmentName(),
                 SimpleTextAttributes.REGULAR_ATTRIBUTES);
+        simpleNode.getPresentation().setIcon(Icons.environmentIcon);
         return simpleNode;
     }
 }

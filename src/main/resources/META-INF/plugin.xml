@@ -69,7 +69,7 @@
         <toolWindow factoryClass="com.lasagnerd.whack.environments.toolWindow.EnvironmentsToolWindowFactory"
                     id="Environments"
                     secondary="true"
-                    icon="/whack_icon_dark.svg">
+                    icon="/icons/whack_icon_dark.svg">
 
         </toolWindow>
     </extensions>

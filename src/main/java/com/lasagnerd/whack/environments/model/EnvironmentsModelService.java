@@ -22,7 +22,6 @@ public class EnvironmentsModelService implements TreeModelListener {
 
     public DefaultTreeModel getTreeModel() {
         if (defaultTreeModel == null) {
-            ;
             defaultTreeModel = new DefaultTreeModel(new EnvironmentsConfigNode(persistentState.environmentConfig));
             defaultTreeModel.addTreeModelListener(this);
         }
@@ -46,11 +45,6 @@ public class EnvironmentsModelService implements TreeModelListener {
                     getTreeModel().reload(environmentNode);
                 });
     }
-
-    public void removeEnvironment(String name) {
-
-    }
-
     public void removeItemFromEnvironment(String environmentName, String path) {
 
     }
@@ -61,25 +55,21 @@ public class EnvironmentsModelService implements TreeModelListener {
 
     @Override
     public void treeNodesChanged(TreeModelEvent e) {
-        System.out.println("treeNodesChanged");
         updateModel();
     }
 
     @Override
     public void treeNodesInserted(TreeModelEvent e) {
-        System.out.println("treeNodesInserted");
         updateModel();
     }
 
     @Override
     public void treeNodesRemoved(TreeModelEvent e) {
-        System.out.println("treeNodesRemoved");
         updateModel();
     }
 
     @Override
     public void treeStructureChanged(TreeModelEvent e) {
-        System.out.println("treeStructureChanged");
         updateModel();
     }
 
