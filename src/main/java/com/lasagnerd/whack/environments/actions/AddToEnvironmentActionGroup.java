@@ -1,14 +1,15 @@
 package com.lasagnerd.whack.environments.actions;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.lasagnerd.whack.environments.model.EnvironmentsConfig;
 import com.lasagnerd.whack.environments.model.EnvironmentsModelService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AddToEnvironmentActionGroup extends DefaultActionGroup {
@@ -25,11 +26,33 @@ public class AddToEnvironmentActionGroup extends DefaultActionGroup {
                 actions.add(new Separator());
             }
         }
-        actions.add(new AddToNewEnvironmentAction("Add To New Environment",
-                "Add to new Environment",
-                AllIcons.General.Add));
+        actions.add(new AddToNewEnvironmentAction(
+        ));
 
 
         return actions.toArray(new AnAction[0]);
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        super.update(e);
+        Project project = e.getProject();
+
+        if (project == null) {
+            e.getPresentation().setEnabled(false);
+            return;
+        }
+
+        DataContext dataContext = e.getDataContext();
+
+        final VirtualFile[] files = CommonDataKeys.VIRTUAL_FILE_ARRAY.getData(dataContext);
+
+        if (files == null)
+            return;
+
+        boolean enabled = Arrays.stream(files).anyMatch(f -> f.isDirectory()
+                || "properties".equals(f.getExtension())
+                || "whack".equals(f.getExtension()));
+        e.getPresentation().setEnabled(enabled);
     }
 }

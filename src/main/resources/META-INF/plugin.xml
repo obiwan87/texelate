@@ -22,6 +22,7 @@
     <depends>com.intellij.modules.java</depends>
     <depends>com.intellij.properties</depends>
     <depends>org.jetbrains.kotlin</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -29,11 +30,13 @@
         <lang.foldingBuilder language="XML"
                              implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"/>
         <!--suppress PluginXmlValidity -->
-        <lang.foldingBuilder language="Ini"
+        <lang.foldingBuilder language="ini"
                              implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"/>
-        <!--suppress PluginXmlValidity -->
-        <lang.foldingBuilder language="YAML"
-                             implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"/>
+        <lang.foldingBuilder language="yaml"
+                             implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"
+
+        />
+
 
         <fileType name="whack"
                   language="Whack"

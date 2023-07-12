@@ -8,29 +8,39 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.ex.DocumentEx;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
+import com.lasagnerd.whack.environments.model.Environment;
+import com.lasagnerd.whack.environments.model.EnvironmentsModelService;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class WhackProfileSelectionAction extends TextDiffViewerUtil.ComboBoxSettingAction<String> {
     private String value = "dev";
 
+    private final Project project;
     private final DocumentEx originalDocument;
     private final DocumentEx preprocessedDocument;
 
-    public WhackProfileSelectionAction(DocumentEx originalDocument, DocumentEx preprocessedDocument) {
+    public WhackProfileSelectionAction(@NotNull Project project, DocumentEx originalDocument, DocumentEx preprocessedDocument) {
+        this.project = project;
         this.originalDocument = originalDocument;
         this.preprocessedDocument = preprocessedDocument;
     }
 
     @Override
     protected @NotNull List<String> getAvailableOptions() {
-        return List.of("dev", "stage", "test", "prod");
+
+        return project.getService(EnvironmentsModelService.class).getEnvironmentsConfig()
+                .getEnvironments().stream()
+                .map(Environment::getName)
+                .toList();
     }
 
     @Override
@@ -76,8 +86,11 @@ public class WhackProfileSelectionAction extends TextDiffViewerUtil.ComboBoxSett
             if (e.getProject() == null)
                 return;
 
-            PsiFile psiFile = PsiFileFactory.getInstance(e.getProject()).createFileFromText(XMLLanguage.INSTANCE, originalDocument.getText());
-            CharSequence preprocessedText = WhackPreprocessor.preprocess(originalDocument.getText(), psiFile);
+            PsiFile psiFile = PsiFileFactory.getInstance(e.getProject())
+                    .createFileFromText(XMLLanguage.INSTANCE, originalDocument.getText());
+
+            CharSequence preprocessedText = WhackPreprocessor
+                    .preprocess(option, originalDocument.getText(), psiFile);
             WriteCommandAction.writeCommandAction(e.getProject())
                     .withUndoConfirmationPolicy(UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION)
                     .shouldRecordActionForActiveDocument(false)

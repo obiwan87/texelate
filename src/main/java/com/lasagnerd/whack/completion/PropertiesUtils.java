@@ -7,13 +7,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.FilenameIndex;
+import com.lasagnerd.whack.environments.model.Environment;
+import com.lasagnerd.whack.environments.model.EnvironmentsModelService;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PropertiesUtils {
@@ -61,4 +60,20 @@ public class PropertiesUtils {
         return properties;
     }
 
+    public static List<Property> getProjectPropertiesForEnvironment(String environment, Project project) {
+        List<Property> projectProperties = getProjectProperties(project);
+        List<String> allowedFiles = project.getService(EnvironmentsModelService.class)
+                .getEnvironmentsConfig()
+                .getEnvironments()
+                .stream()
+                .filter(x -> x.getName().equals(environment))
+                .findFirst()
+                .map(Environment::getPaths)
+                .orElse(Collections.emptyList());
+
+        return projectProperties.stream()
+                .filter(propertyFile -> allowedFiles.stream()
+                        .anyMatch(path -> propertyFile.getContainingFile().getVirtualFile().getPath().contains(path)))
+                .collect(Collectors.toList());
+    }
 }

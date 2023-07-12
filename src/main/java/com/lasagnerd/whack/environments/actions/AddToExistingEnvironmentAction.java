@@ -38,4 +38,10 @@ public class AddToExistingEnvironmentAction extends AnAction {
 
         }
     }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        super.update(e);
+
+    }
 }

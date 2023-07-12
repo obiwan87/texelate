@@ -20,7 +20,10 @@ public class WhackDiffViewer extends SimpleDiffViewer {
         List<AnAction> toolbarActions = super.createToolbarActions();
         @NotNull DocumentEx originalDocument = getEditor(Side.LEFT).getDocument();
         @NotNull DocumentEx preprocessedDocument = getEditor(Side.RIGHT).getDocument();
-        toolbarActions.add(new WhackProfileSelectionAction(originalDocument, preprocessedDocument));
+
+        if(getProject() != null) {
+            toolbarActions.add(new WhackProfileSelectionAction(getProject(), originalDocument, preprocessedDocument));
+        }
 
         return  toolbarActions;
     }

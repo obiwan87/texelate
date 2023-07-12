@@ -16,17 +16,16 @@ public class WhackInterpreter {
     }
 
     public static boolean interpret(Map<String, Object> variables, WhackFile whackFile) {
-        WhackInterpreter whackInterpreter = new WhackInterpreter();
         PsiElement firstChild = whackFile.getFirstChild();
-
-        if(firstChild instanceof WhackExpression) {
-            WhackExpression root = (WhackExpression) firstChild;
+        if(firstChild instanceof WhackExpression root) {
             try {
+
                 return root.evaluate(variables);
             } catch (Exception e) {
                 throw new RuntimeException("Interpretation failed", e);
             }
         }
+        System.out.println("WOT!");
         return System.currentTimeMillis() % 2 == 0;
     }
 

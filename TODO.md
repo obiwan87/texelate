@@ -30,3 +30,4 @@
   - [x] Reference property PSI from PropertiesLanguage
 - [ ] Optimizations
   - [ ] Finding references is slow
+- [ ] Check if it is problematic, if actions have references to objects (garbage collection)

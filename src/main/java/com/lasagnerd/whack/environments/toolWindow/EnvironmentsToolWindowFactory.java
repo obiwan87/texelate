@@ -2,15 +2,17 @@ package com.lasagnerd.whack.environments.toolWindow;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.treeView.NodeRenderer;
+import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
-import com.intellij.openapi.util.NlsActions;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
@@ -29,13 +31,16 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+        for (Language registeredLanguage : Language.getRegisteredLanguages()) {
+            System.out.println(registeredLanguage.getDisplayName());
+            System.out.println(registeredLanguage.getClass().getName());
+        }
         EnvironmentsToolWindow environmentsToolWindowContent = new EnvironmentsToolWindow(project);
         Content content = ContentFactory.getInstance().createContent(environmentsToolWindowContent.getContentPanel(),
                 "",
                 false);
         toolWindow.getContentManager().addContent(content);
     }
-
 
     private static class EnvironmentsToolWindow {
         SimpleToolWindowPanel contentPanel = new SimpleToolWindowPanel(true, false);
@@ -48,15 +53,12 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             tree.setShowsRootHandles(true);
             tree.setCellRenderer(new NodeRenderer());
             tree.getEmptyText().appendText("No environments configured", SimpleTextAttributes.GRAYED_ATTRIBUTES);
-            tree.getEmptyText().appendSecondaryText("Add environment", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES, e -> System.out.println("Clicked"));
+            tree.getEmptyText().appendSecondaryText("Add environment", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES,
+                    e -> AddEnvironmentAction.addEnvironmentWithDialog(model));
 
-            RemoveNodeAction removeNodeAction = new RemoveNodeAction("Remove", "Remove selected node", AllIcons.General.Remove);
-            removeNodeAction.tree = tree;
+            RemoveNodeAction removeNodeAction = new RemoveNodeAction(tree);
 
-            AddEnvironmentAction addEnvironmentAction = new AddEnvironmentAction("Add",
-                    "Add new environment",
-                    AllIcons.General.Add,
-                    tree);
+            AddEnvironmentAction addEnvironmentAction = new AddEnvironmentAction(tree);
 
             AnAction[] actions = new AnAction[]{
                     addEnvironmentAction,
@@ -78,51 +80,6 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             contentPanel.setContent(tree);
         }
 
-        public static class RemoveNodeAction extends AnAction {
-            Tree tree;
-
-            public RemoveNodeAction(@Nullable @NlsActions.ActionText String text,
-                                    @Nullable @NlsActions.ActionDescription String description,
-                                    @Nullable Icon icon) {
-                super(text, description, icon);
-            }
-
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                Tree tree = this.tree;
-                DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-                if (node != null) {
-                    model.removeNodeFromParent(node);
-                }
-            }
-        }
-
-        public static class AddEnvironmentAction extends AnAction {
-            Tree tree;
-
-            public AddEnvironmentAction(@Nullable @NlsActions.ActionText String text,
-                                        @Nullable @NlsActions.ActionDescription String description,
-                                        @Nullable Icon icon,
-                                        Tree tree) {
-                super(text, description, icon);
-                this.tree = tree;
-            }
-
-
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                Tree tree = this.tree;
-                DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-                SimpleNodeWrapper<?> root = (SimpleNodeWrapper<?>) model.getRoot();
-
-                Environment environment = new Environment("new");
-                EnvironmentNode environmentNode = new EnvironmentNode(environment);
-                int index = root.getChildCount();
-                model.insertNodeInto(environmentNode, root, index);
-
-            }
-        }
 
         public JComponent getContentPanel() {
 
@@ -131,4 +88,78 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
 
     }
 
+    public static class NewEnvironmentDialog extends DialogWrapper {
+
+        private JBTextField textField;
+
+        public NewEnvironmentDialog() {
+            super(true); // use current window as parent
+            init();
+            setTitle("New Environment");
+        }
+
+        @Override
+        protected @Nullable JComponent createCenterPanel() {
+            // Simple text field for entering the environment name.
+
+            textField = new JBTextField();
+            textField.setTextToTriggerEmptyTextStatus("environment");
+
+            return textField;
+        }
+    }
+
+    public static class RemoveNodeAction extends AnAction {
+        private final Tree tree;
+
+        public RemoveNodeAction(Tree tree) {
+            super("Remove", "Remove selected node", AllIcons.General.Remove);
+            this.tree = tree;
+        }
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent e) {
+            Tree tree = this.tree;
+            DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+            if (node != null) {
+                model.removeNodeFromParent(node);
+            }
+        }
+    }
+
+    public static class AddEnvironmentAction extends AnAction {
+        Tree tree;
+
+        public AddEnvironmentAction(Tree tree) {
+            super("Add", "Add new environment", AllIcons.General.Add);
+            this.tree = tree;
+        }
+
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent e) {
+            Tree tree = this.tree;
+            DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+            addEnvironmentWithDialog(model);
+        }
+
+        public static EnvironmentNode addEnvironmentWithDialog(DefaultTreeModel model) {
+            NewEnvironmentDialog dialog = new NewEnvironmentDialog();
+            if (dialog.showAndGet()) {
+                String text = dialog.textField.getText();
+                Environment environment = new Environment(text);
+                EnvironmentNode environmentNode = new EnvironmentNode(environment);
+                SimpleNodeWrapper<?> root = (SimpleNodeWrapper<?>) model.getRoot();
+                int index = root.getChildCount();
+                root.add(environmentNode);
+                model.nodesWereInserted(root, new int[]{index});
+                model.reload();
+
+                return environmentNode;
+            }
+            return null;
+        }
+
+    }
 }
