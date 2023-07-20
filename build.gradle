@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'com.lasagnerd'
-version '0.0.1-SNAPSHOT'
+version '0.0.2-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -25,12 +25,18 @@ intellij {
     plugins = ['com.intellij.properties',
                'org.jetbrains.plugins.yaml',
                'com.intellij.java',
-               'Kotlin']
+               'Kotlin',
+               'com.jetbrains.plugins.ini4idea:231.9161.47'
+    ]
 }
 patchPluginXml {
     changeNotes = """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+      <b>First release.</b>
+      
+      This plugin will help you <em>preview your files</em> after variables have been <em>interpolated</em>.
+      It also adds support for a <em>simple template language</em> that supports if-blocks.
+      
+      """
 }
 test {
     useJUnitPlatform()

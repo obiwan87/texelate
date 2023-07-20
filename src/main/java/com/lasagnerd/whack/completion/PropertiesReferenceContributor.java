@@ -19,8 +19,7 @@ public class PropertiesReferenceContributor extends PsiReferenceContributor {
 
         @Override
         public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
-            System.out.println("Hello from PsiReferenceProvider");
-            return new PsiReference[0];
+                        return new PsiReference[0];
         }
     }
 }

@@ -20,13 +20,13 @@ public class WhackInterpreter {
         if(firstChild instanceof WhackExpression root) {
             try {
 
-                return root.evaluate(variables);
+                boolean result = root.evaluate(variables);
+                                return result;
             } catch (Exception e) {
                 throw new RuntimeException("Interpretation failed", e);
             }
         }
-        System.out.println("WOT!");
-        return System.currentTimeMillis() % 2 == 0;
+        return false;
     }
 
     private static void checkValidity(WhackFile whackFile) {

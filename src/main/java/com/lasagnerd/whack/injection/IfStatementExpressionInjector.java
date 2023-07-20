@@ -10,14 +10,12 @@ import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.xml.XmlProcessingInstruction;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class IfStatementExpressionInjector implements MultiHostInjector {
 
-    public static final String KOTLIN_PREFIX = "fun dsl() { %s if(";
-    public static final String KOTLIN_SUFFIX = ") {  } }";
 
     @Override
     public void getLanguagesToInject(@NotNull MultiHostRegistrar registrar, @NotNull PsiElement context) {

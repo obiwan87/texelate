@@ -31,10 +31,6 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        for (Language registeredLanguage : Language.getRegisteredLanguages()) {
-            System.out.println(registeredLanguage.getDisplayName());
-            System.out.println(registeredLanguage.getClass().getName());
-        }
         EnvironmentsToolWindow environmentsToolWindowContent = new EnvironmentsToolWindow(project);
         Content content = ContentFactory.getInstance().createContent(environmentsToolWindowContent.getContentPanel(),
                 "",

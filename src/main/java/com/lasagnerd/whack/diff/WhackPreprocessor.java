@@ -27,7 +27,7 @@ public class WhackPreprocessor {
                 .getInstance(root.getProject())
                 .createFileFromText(preprocessor, text);
         try {
-            return Interpreter.interpret(environment, psiFile, text);
+            return Interpreter.interpret(environment, psiFile);
         } catch (RuntimeException e) {
             return text;
         }
@@ -35,26 +35,23 @@ public class WhackPreprocessor {
 
 
     private static class Interpreter {
-        private static String interpret(String environment, PsiFile psiFile, String text) {
-            Interpreter interpreter = new Interpreter(environment, psiFile.getProject(), text);
+        private static String interpret(String environment, PsiFile psiFile) {
+            Interpreter interpreter = new Interpreter(environment, psiFile.getProject());
             for (PsiElement child : psiFile.getChildren()) {
                 interpreter.processChild(child);
             }
 
-            return interpreter.text.toString();
+            return replaceVariables(interpreter.text, interpreter.variables);
         }
+
         StringBuilder text = new StringBuilder();
-        private final String originalText;
         private final String environment;
         private final @NotNull Project project;
         Map<String, Object> variables = new HashMap<>();
 
-        int lastOffset = 0;
-
-        private Interpreter(String environment, @NotNull Project project, String originalText) {
+        private Interpreter(String environment, @NotNull Project project) {
             this.environment = environment;
             this.project = project;
-            this.originalText = originalText;
             initializeVariables();
         }
 
@@ -91,7 +88,7 @@ public class WhackPreprocessor {
             if (psiElement instanceof PreprocessorIfBlock preprocessorIfBlock) {
                 String openingIfStatementText = preprocessorIfBlock.getOpeningStatement();
 
-                Optional<IfStatement> ifStatementOptional = IfStatementTokenPatterns.parseXmlCommentOpeningIfStatement(openingIfStatementText);
+                Optional<IfStatement> ifStatementOptional = IfStatementTokenPatterns.parseOpeningIfStatement(openingIfStatementText);
                 if (ifStatementOptional.isPresent()) {
                     IfStatement ifStatement = ifStatementOptional.get();
                     String expression = ifStatement.getExpression().trim();
@@ -99,9 +96,7 @@ public class WhackPreprocessor {
                     PsiFile whackPsiFile = PsiFileFactory.getInstance(project).createFileFromText(WhackLanguage.INSTANCE, expression);
                     if (whackPsiFile instanceof WhackFile) {
                         boolean interpretedValue = WhackInterpreter.interpret(variables, (WhackFile) whackPsiFile);
-                        System.out.println("Interpreted value: " + interpretedValue);
-                        System.out.println("Expression: " + expression);
-                        if (interpretedValue) {
+                                                                        if (interpretedValue) {
                             for (PsiElement child : preprocessorIfBlock.getChildren()) {
                                 processChild(child);
                             }
@@ -113,6 +108,22 @@ public class WhackPreprocessor {
             } else {
                 text.append(psiElement.getText());
             }
+        }
+
+        private static String replaceVariables(StringBuilder text, Map<String, Object> variables) {
+            String currentText = text.toString();
+
+            // Replaces strings in the for $variable or ${variable} with the value of the variable
+            for (Map.Entry<String, Object> variable : variables.entrySet()) {
+                String variableName = variable.getKey();
+                // escape variableName for regex
+                Object value = variable.getValue();
+                String valueString = value.toString();
+                currentText = currentText.replaceAll("\\$\\{%s}".formatted(variableName), valueString);
+                currentText = currentText.replaceAll("\\$%s".formatted(variableName), valueString);
+            }
+
+            return currentText;
         }
     }
 }

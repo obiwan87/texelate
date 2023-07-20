@@ -88,8 +88,7 @@ public class EnvironmentsModelService implements TreeModelListener {
                 environment.getPaths().add(((FilePathNode) filePathNode).getFilePath());
             });
             environments.add(environment);
-            System.out.println("Adding environment: " + environment.getName());
-        });
+                    });
         environmentConfig.setEnvironments(environments);
         persistentState.environmentConfig = environmentConfig;
     }

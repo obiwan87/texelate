@@ -39,4 +39,15 @@ public class IfStatementTokenPatterns {
         }
         return Optional.empty();
     }
+
+    public static Optional<IfStatement> parseOpeningIfStatement(String line) {
+        Matcher matcher = GENERIC_OPENING_IF_STATEMENT_PATTERN.matcher(line);
+        if(matcher.find()) {
+            String prefix = matcher.group(1);
+            String expression = matcher.group(2);
+
+            return Optional.of(new IfStatement(prefix, expression, ""));
+        }
+        return Optional.empty();
+    }
 }

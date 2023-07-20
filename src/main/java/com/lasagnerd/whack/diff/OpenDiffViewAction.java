@@ -5,7 +5,7 @@ import com.intellij.diff.DiffDialogHints;
 import com.intellij.diff.DiffManager;
 import com.intellij.diff.contents.DiffContent;
 import com.intellij.diff.requests.SimpleDiffRequest;
-import com.intellij.ide.highlighter.XmlFileType;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -39,7 +39,7 @@ public class OpenDiffViewAction extends AnAction {
         DiffContent diffContentPreprocessed = createDiffContent(project, document.getText(),
                 virtualFile.getFileType());
 
-        SimpleDiffRequest simpleDiffRequest = createSimpleRequest(diffContentOriginal, diffContentPreprocessed);
+        SimpleDiffRequest simpleDiffRequest = createSimpleRequest(virtualFile, diffContentOriginal, diffContentPreprocessed);
         DiffManager.getInstance().showDiff(project, simpleDiffRequest, DiffDialogHints.FRAME);
     }
 
@@ -51,12 +51,14 @@ public class OpenDiffViewAction extends AnAction {
     }
 
     @NotNull
-    private SimpleDiffRequest createSimpleRequest(DiffContent document1, DiffContent document2) {
-        return new WhackDiffRequest("Window Title",
+    private SimpleDiffRequest createSimpleRequest(VirtualFile virtualFile, DiffContent document1, DiffContent document2) {
+        return new WhackDiffRequest(
+                "Window Title",
                 document1,
                 document2,
                 "Title 1",
-                "Title 2");
+                "Title 2",
+                virtualFile.getFileType());
     }
 
     /**
@@ -82,4 +84,9 @@ public class OpenDiffViewAction extends AnAction {
         e.getPresentation().setEnabledAndVisible(menuAllowed);
     }
 
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
 }

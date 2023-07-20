@@ -22,8 +22,7 @@ public class AddToNewEnvironmentAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        System.out.println("AddToNewEnvironmentAction.actionPerformed()");
-
+        
         DataContext dataContext = event.getDataContext();
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         if (project == null) {
