@@ -119,8 +119,13 @@ public class WhackPreprocessor {
                 // escape variableName for regex
                 Object value = variable.getValue();
                 String valueString = value.toString();
-                currentText = currentText.replaceAll("\\$\\{%s}".formatted(variableName), valueString);
-                currentText = currentText.replaceAll("\\$%s".formatted(variableName), valueString);
+                String replacement = valueString.replaceAll("\\\\", "\\\\\\\\")
+                        .replaceAll("\\$", "\\\\\\$");
+
+                currentText = currentText.replaceAll("\\$\\{%s}".formatted(variableName), replacement);
+
+                currentText = currentText
+                        .replaceAll("\\$%s".formatted(variableName), replacement);
             }
 
             return currentText;

@@ -45,6 +45,7 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             DefaultTreeModel model = project.getService(EnvironmentsModelService.class).getTreeModel();
 
             Tree tree = new Tree(model);
+
             tree.setRootVisible(false);
             tree.setShowsRootHandles(true);
             tree.setCellRenderer(new NodeRenderer());

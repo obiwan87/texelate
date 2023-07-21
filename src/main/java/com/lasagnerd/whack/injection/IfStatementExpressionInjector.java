@@ -1,14 +1,17 @@
 package com.lasagnerd.whack.injection;
 
+import com.intellij.formatting.InjectedFormattingOptionsProvider;
 import com.intellij.lang.Language;
 import com.intellij.lang.injection.MultiHostInjector;
 import com.intellij.lang.injection.MultiHostRegistrar;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.psi.xml.XmlProcessingInstruction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,8 +22,7 @@ public class IfStatementExpressionInjector implements MultiHostInjector {
 
     @Override
     public void getLanguagesToInject(@NotNull MultiHostRegistrar registrar, @NotNull PsiElement context) {
-        if (context instanceof PsiComment && context instanceof PsiLanguageInjectionHost) {
-            PsiComment psiComment = (PsiComment) context;
+        if (context instanceof PsiComment psiComment && context instanceof PsiLanguageInjectionHost) {
             String commentText = psiComment.getText();
             Pattern pattern;
             if (context.getLanguage().getID().equals("XML")) {
@@ -31,11 +33,11 @@ public class IfStatementExpressionInjector implements MultiHostInjector {
 
             Matcher matcher = pattern.matcher(commentText);
             if (matcher.find()) {
-                Language kotlin = Language.findLanguageByID("Whack");
+                Language language = Language.findLanguageByID("Whack");
 
-                if (kotlin != null) {
+                if (language != null) {
                     //group(0)?if_
-                    registrar.startInjecting(kotlin);
+                    registrar.startInjecting(language);
                     registrar.addPlace("",
                             "",
                             (PsiLanguageInjectionHost) context,
@@ -51,4 +53,5 @@ public class IfStatementExpressionInjector implements MultiHostInjector {
     List<? extends Class<? extends PsiElement>> elementsToInjectIn() {
         return List.of(PsiComment.class, XmlProcessingInstruction.class);
     }
+
 }
