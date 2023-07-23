@@ -2,12 +2,14 @@ package com.lasagnerd.whack.environments.toolWindow;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.treeView.NodeRenderer;
-import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.SimpleTextAttributes;
@@ -16,16 +18,16 @@ import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
-import com.lasagnerd.whack.environments.model.Environment;
-import com.lasagnerd.whack.environments.model.EnvironmentNode;
-import com.lasagnerd.whack.environments.model.EnvironmentsModelService;
-import com.lasagnerd.whack.environments.model.SimpleNodeWrapper;
+import com.lasagnerd.whack.environments.model.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAware {
 
@@ -52,6 +54,27 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             tree.getEmptyText().appendText("No environments configured", SimpleTextAttributes.GRAYED_ATTRIBUTES);
             tree.getEmptyText().appendSecondaryText("Add environment", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES,
                     e -> AddEnvironmentAction.addEnvironmentWithDialog(model));
+
+            tree.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) {
+                        Tree tree = (Tree) e.getSource();
+                        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+                        if (node != null) {
+                            if (node instanceof FilePathNode filePathNode) {
+                                FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+                                // Get system path separator
+                                VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByPath(filePathNode.getFilePath());
+
+                                if (virtualFile != null) {
+                                    fileEditorManager.openFile(virtualFile, true, true);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
 
             RemoveNodeAction removeNodeAction = new RemoveNodeAction(tree);
 
