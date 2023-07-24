@@ -27,7 +27,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAware {
 
@@ -47,6 +46,23 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             DefaultTreeModel model = project.getService(EnvironmentsModelService.class).getTreeModel();
 
             Tree tree = new Tree(model);
+            tree.registerKeyboardAction(e -> RemoveNodeAction.removeSelectedNode(tree), KeyStroke.getKeyStroke("DELETE"),
+                    JComponent.WHEN_FOCUSED);
+            tree.registerKeyboardAction(e -> {
+                        // get selected node
+                        if (tree.getLastSelectedPathComponent() instanceof EnvironmentNode environmentNode) {
+                            EnvironmentDialog environmentDialog = new EnvironmentDialog("Edit environment", environmentNode.getEnvironmentName());
+                            System.out.println("Edit environment");
+                            if (environmentDialog.showAndGet()) {
+                                String text = environmentDialog.textField.getText();
+                                environmentNode.setEnvironmentName(text);
+                                model.reload();
+                            }
+                        }
+                    }, KeyStroke.getKeyStroke("shift F6"),
+                    JComponent.WHEN_FOCUSED
+            );
+            // Get shortcut for renaming from Shortcut register
 
             tree.setRootVisible(false);
             tree.setShowsRootHandles(true);
@@ -77,14 +93,20 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             });
 
             RemoveNodeAction removeNodeAction = new RemoveNodeAction(tree);
-
             AddEnvironmentAction addEnvironmentAction = new AddEnvironmentAction(tree);
+            EditEnvironmentAction editEnvironmentAction = new EditEnvironmentAction(tree);
+            MoveNodeAction moveNodeDownAction = new MoveNodeAction(tree, 1);
+            MoveNodeAction moveNodeUpAction = new MoveNodeAction(tree, -1);
 
             AnAction[] actions = new AnAction[]{
                     addEnvironmentAction,
                     removeNodeAction,
-                    new Separator()
+                    editEnvironmentAction,
+                    new Separator(),
+                    moveNodeDownAction,
+                    moveNodeUpAction,
             };
+
             ActionGroup actionGroup = new ActionGroup() {
                 @Override
                 public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
@@ -108,21 +130,23 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
 
     }
 
-    public static class NewEnvironmentDialog extends DialogWrapper {
+    public static class EnvironmentDialog extends DialogWrapper {
 
         private JBTextField textField;
+        private final String initialValue;
 
-        public NewEnvironmentDialog() {
+        public EnvironmentDialog(String title, String initialValue) {
             super(true); // use current window as parent
+            this.initialValue = initialValue;
             init();
-            setTitle("New Environment");
+            setTitle(title);
         }
 
         @Override
         protected @Nullable JComponent createCenterPanel() {
             // Simple text field for entering the environment name.
-
             textField = new JBTextField();
+            textField.setText(initialValue);
             textField.setTextToTriggerEmptyTextStatus("environment");
 
             return textField;
@@ -135,11 +159,16 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
         public RemoveNodeAction(Tree tree) {
             super("Remove", "Remove selected node", AllIcons.General.Remove);
             this.tree = tree;
+            this.setShortcutSet(CustomShortcutSet.fromString("DELETE"));
         }
 
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             Tree tree = this.tree;
+            removeSelectedNode(tree);
+        }
+
+        static void removeSelectedNode(Tree tree) {
             DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
             if (node != null) {
@@ -165,7 +194,7 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
         }
 
         public static EnvironmentNode addEnvironmentWithDialog(DefaultTreeModel model) {
-            NewEnvironmentDialog dialog = new NewEnvironmentDialog();
+            EnvironmentDialog dialog = new EnvironmentDialog("New Environment", "");
             if (dialog.showAndGet()) {
                 String text = dialog.textField.getText();
                 Environment environment = new Environment(text);
@@ -180,6 +209,47 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             }
             return null;
         }
+    }
 
+    public static class EditEnvironmentAction extends AnAction {
+        Tree tree;
+
+        public EditEnvironmentAction(Tree tree) {
+            super("Edit", "Edit environment", AllIcons.Actions.Edit);
+            this.tree = tree;
+
+        }
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent e) {
+
+        }
+    }
+
+    private static class MoveNodeAction extends AnAction {
+        private final Tree tree;
+        private final int direction;
+
+        public MoveNodeAction(Tree tree, int direction) {
+            super(direction > 0 ? "Move Down" : "Move Up", "Move selected node", direction > 0 ? AllIcons.Actions.MoveDown : AllIcons.Actions.MoveUp);
+            this.tree = tree;
+            this.direction = direction;
+        }
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent e) {
+            Tree tree = this.tree;
+            DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+
+            if (node instanceof EnvironmentNode) {
+                int index = node.getParent().getIndex(node);
+                int newIndex = index + direction;
+                if (newIndex >= 0 && newIndex < node.getParent().getChildCount()) {
+                    model.removeNodeFromParent(node);
+                    model.insertNodeInto(node, (DefaultMutableTreeNode) tree.getModel().getRoot(), newIndex);
+                    model.reload();
+                }
+            }
+        }
     }
 }
