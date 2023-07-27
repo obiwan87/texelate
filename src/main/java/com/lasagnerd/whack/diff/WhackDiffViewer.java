@@ -16,7 +16,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.lasagnerd.whack.environments.model.Environment;
 import com.lasagnerd.whack.environments.model.EnvironmentsModelService;
-import ini4idea.IniLanguage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLLanguage;
 
@@ -35,7 +34,6 @@ public class WhackDiffViewer extends SimpleDiffViewer {
         Language language = switch (fileType.getName().toUpperCase()) {
             case "XML" -> XMLLanguage.INSTANCE;
             case "YAML", "YML" -> YAMLLanguage.INSTANCE;
-            case "INI" -> IniLanguage.INSTANCE;
             default -> throw new RuntimeException("Unsupported file type: " + fileType.getName());
         };
 
@@ -73,15 +71,20 @@ public class WhackDiffViewer extends SimpleDiffViewer {
     @Override
     protected void onInit() {
         super.onInit();
-        String environment = getProject().getService(EnvironmentsModelService.class).getEnvironmentsConfig()
+        Project project = getProject();
+        if(project == null) {
+            return;
+        }
+
+        String environment = project.getService(EnvironmentsModelService.class).getEnvironmentsConfig()
                 .getEnvironments().stream()
                 .map(Environment::getName)
                 .findFirst()
                 .orElse(null);
 
-        if(environment != null) {
+        if (environment != null) {
             WhackDiffRequest req = (WhackDiffRequest) getRequest();
-            runDiff(getProject(),
+            runDiff(project,
                     req.getFileType(),
                     getEditor(Side.LEFT).getDocument(),
                     getEditor(Side.RIGHT).getDocument(),

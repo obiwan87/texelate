@@ -1,12 +1,9 @@
 package com.lasagnerd.whack.lang;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.lang.Language;
-import com.intellij.lang.properties.PropertiesIcons;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.openapi.util.NlsSafe;
-import com.intellij.ui.CoreIconManager;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

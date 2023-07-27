@@ -14,23 +14,19 @@
     </change-notes>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
-    <idea-version since-build="231"/>
+    <idea-version since-build="231.*" until-build="232.*"/>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
     <depends>com.intellij.properties</depends>
-    <depends>org.jetbrains.kotlin</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
-    <depends>com.jetbrains.plugins.ini4idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <multiHostInjector implementation="com.lasagnerd.whack.injection.IfStatementExpressionInjector"/>
         <lang.foldingBuilder language="XML"
-                             implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"/>
-        <lang.foldingBuilder language="Ini"
                              implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"/>
         <lang.foldingBuilder language="yaml"
                              implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"
