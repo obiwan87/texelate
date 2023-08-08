@@ -9,7 +9,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.lasagnerd.whack.environments.model.EnvironmentNode;
 import com.lasagnerd.whack.environments.model.EnvironmentsModelService;
+import com.lasagnerd.whack.environments.model.FilePathNode;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.tree.TreePath;
 
 import static com.lasagnerd.whack.environments.toolWindow.EnvironmentsToolWindowFactory.AddEnvironmentAction;
 
@@ -30,7 +33,8 @@ public class AddToNewEnvironmentAction extends AnAction {
         }
 
         EnvironmentsModelService service = project.getService(EnvironmentsModelService.class);
-        EnvironmentNode environmentNode = AddEnvironmentAction.addEnvironmentWithDialog(service.getTreeModel());
+
+        EnvironmentNode environmentNode = AddEnvironmentAction.addEnvironmentWithDialog(service.getTree(), service.getTreeModel());
 
         final VirtualFile[] files = CommonDataKeys.VIRTUAL_FILE_ARRAY.getData(dataContext);
 
@@ -41,10 +45,16 @@ public class AddToNewEnvironmentAction extends AnAction {
             return;
 
         String environmentName = environmentNode.getEnvironmentName();
+        FilePathNode filePathNode = null;
         for (VirtualFile file : files) {
-            project.getService(EnvironmentsModelService.class)
+            filePathNode = project.getService(EnvironmentsModelService.class)
                     .addItemToEnvironment(environmentName, file.getPath());
-
+        }
+        if (filePathNode != null) {
+            TreePath path = new TreePath(filePathNode.getPath());
+            service.getTree().expandPath(path);
+            // Select the new node
+            service.getTree().setSelectionPath(path);
         }
     }
 }

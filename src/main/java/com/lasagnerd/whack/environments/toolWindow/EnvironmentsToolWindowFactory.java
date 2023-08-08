@@ -25,8 +25,10 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Enumeration;
 
 public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAware {
 
@@ -46,6 +48,7 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             DefaultTreeModel model = project.getService(EnvironmentsModelService.class).getTreeModel();
 
             Tree tree = new Tree(model);
+            project.getService(EnvironmentsModelService.class).setTree(tree);
             tree.registerKeyboardAction(e -> RemoveNodeAction.removeSelectedNode(tree), KeyStroke.getKeyStroke("DELETE"),
                     JComponent.WHEN_FOCUSED);
             tree.registerKeyboardAction(e -> {
@@ -69,7 +72,7 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             tree.setCellRenderer(new NodeRenderer());
             tree.getEmptyText().appendText("No environments configured", SimpleTextAttributes.GRAYED_ATTRIBUTES);
             tree.getEmptyText().appendSecondaryText("Add environment", SimpleTextAttributes.LINK_PLAIN_ATTRIBUTES,
-                    e -> AddEnvironmentAction.addEnvironmentWithDialog(model));
+                    e -> AddEnvironmentAction.addEnvironmentWithDialog(tree, model));
 
             tree.addMouseListener(new MouseAdapter() {
                 @Override
@@ -92,6 +95,18 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
                 }
             });
 
+            ActionGroup actionGroup = getActionGroup(tree);
+
+            ActionToolbar environmentsToolbar = ActionManager.getInstance()
+                    .createActionToolbar("Environments", actionGroup, true);
+            environmentsToolbar.setTargetComponent(contentPanel);
+            contentPanel.setToolbar(environmentsToolbar.getComponent());
+
+            contentPanel.setContent(tree);
+        }
+
+        @NotNull
+        private static ActionGroup getActionGroup(Tree tree) {
             RemoveNodeAction removeNodeAction = new RemoveNodeAction(tree);
             AddEnvironmentAction addEnvironmentAction = new AddEnvironmentAction(tree);
             EditEnvironmentAction editEnvironmentAction = new EditEnvironmentAction(tree);
@@ -107,19 +122,12 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
                     moveNodeUpAction,
             };
 
-            ActionGroup actionGroup = new ActionGroup() {
+            return new ActionGroup() {
                 @Override
                 public AnAction @NotNull [] getChildren(@Nullable AnActionEvent e) {
                     return actions;
                 }
             };
-
-            ActionToolbar environmentsToolbar = ActionManager.getInstance()
-                    .createActionToolbar("Environments", actionGroup, true);
-            environmentsToolbar.setTargetComponent(contentPanel);
-            contentPanel.setToolbar(environmentsToolbar.getComponent());
-
-            contentPanel.setContent(tree);
         }
 
 
@@ -190,13 +198,21 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
         public void actionPerformed(@NotNull AnActionEvent e) {
             Tree tree = this.tree;
             DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-            addEnvironmentWithDialog(model);
+            addEnvironmentWithDialog(tree, model);
         }
 
-        public static EnvironmentNode addEnvironmentWithDialog(DefaultTreeModel model) {
+        public static EnvironmentNode addEnvironmentWithDialog(Tree tree, DefaultTreeModel model) {
             EnvironmentDialog dialog = new EnvironmentDialog("New Environment", "");
             if (dialog.showAndGet()) {
+
                 String text = dialog.textField.getText();
+
+                // Save expansion state
+                Enumeration<TreePath> expandedDescendants = null;
+                if(tree != null) {
+                    expandedDescendants = tree.getExpandedDescendants(new TreePath(model.getRoot()));
+                }
+
                 Environment environment = new Environment(text);
                 EnvironmentNode environmentNode = new EnvironmentNode(environment);
                 SimpleNodeWrapper<?> root = (SimpleNodeWrapper<?>) model.getRoot();
@@ -205,6 +221,16 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
                 model.nodesWereInserted(root, new int[]{index});
                 model.reload();
 
+                if(expandedDescendants != null) {
+                    // Restore expansion state
+                    while (expandedDescendants.hasMoreElements()) {
+                        TreePath treePath = expandedDescendants.nextElement();
+                        tree.expandPath(treePath);
+                    }
+                    // Select new node
+                    TreePath path = new TreePath(environmentNode.getPath());
+                    tree.setSelectionPath(path);
+                }
                 return environmentNode;
             }
             return null;
@@ -241,15 +267,31 @@ public class EnvironmentsToolWindowFactory implements ToolWindowFactory, DumbAwa
             DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
+            // save expansion state
+            Enumeration<TreePath> expandedDescendants = tree.getExpandedDescendants(new TreePath(model.getRoot()));
+
             if (node instanceof EnvironmentNode) {
                 int index = node.getParent().getIndex(node);
                 int newIndex = index + direction;
                 if (newIndex >= 0 && newIndex < node.getParent().getChildCount()) {
                     model.removeNodeFromParent(node);
                     model.insertNodeInto(node, (DefaultMutableTreeNode) tree.getModel().getRoot(), newIndex);
+
                     model.reload();
+
+                    // restore expansion state
+                    while (expandedDescendants.hasMoreElements()) {
+                        TreePath path = expandedDescendants.nextElement();
+                        tree.expandPath(path);
+                    }
+
+                    // Select moved node
+                    TreePath path = new TreePath(node.getPath());
+                    tree.setSelectionPath(path);
                 }
             }
+
+
         }
     }
 }

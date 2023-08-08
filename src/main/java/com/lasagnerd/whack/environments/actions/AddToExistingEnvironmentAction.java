@@ -7,8 +7,13 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.lasagnerd.whack.environments.model.EnvironmentNode;
 import com.lasagnerd.whack.environments.model.EnvironmentsModelService;
+import com.lasagnerd.whack.environments.model.FilePathNode;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 public class AddToExistingEnvironmentAction extends AnAction {
     private final String environmentName;
@@ -20,20 +25,29 @@ public class AddToExistingEnvironmentAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-                DataContext dataContext = event.getDataContext();
+        DataContext dataContext = event.getDataContext();
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         if (project == null) {
             return;
         }
-        final Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
         final VirtualFile[] files = CommonDataKeys.VIRTUAL_FILE_ARRAY.getData(dataContext);
 
         if (files == null)
             return;
 
+
+        FilePathNode filePathNode = null;
+        EnvironmentsModelService service = project.getService(EnvironmentsModelService.class);
         for (VirtualFile file : files) {
-            project.getService(EnvironmentsModelService.class)
+            filePathNode = service
                     .addItemToEnvironment(environmentName, file.getPath());
+
+        }
+        if (filePathNode != null) {
+            // Select the new node and expand its parent
+            service.getTree().setSelectionPath(new TreePath(filePathNode.getPath()));
+            EnvironmentNode parent = (EnvironmentNode) filePathNode.getParent();
+            service.getTree().expandPath(new TreePath(parent.getPath()));
 
         }
     }
