@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class MicroboolParserDefinitionTest extends ParsingTestCase {
 
     public MicroboolParserDefinitionTest() {
-        super("", "whack", new MicroboolParserDefinition());
+        super("", "microbool", new MicroboolParserDefinition());
         this.myLanguage = MicroboolLanguage.INSTANCE;
     }
 

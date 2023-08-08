@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.lasagnerd.texelate</id>
     <name>Texelate</name>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <vendor email="lasagnerd@googlemail.com" url="http://lasagnerd.com">Lasagnerd</vendor>
 
     <description><![CDATA[
@@ -36,10 +36,10 @@
         />
 
 
-        <fileType name="texelate"
+        <fileType name="microbool"
                   language="Microbool"
                   fieldName="INSTANCE"
-                  extensions="texelate"
+                  extensions="microbool"
                   implementationClass="com.lasagnerd.texelate.microbool.MicroboolFileType"/>
         <lang.parserDefinition language="Microbool" implementationClass="com.lasagnerd.texelate.microbool.MicroboolParserDefinition"/>
 
