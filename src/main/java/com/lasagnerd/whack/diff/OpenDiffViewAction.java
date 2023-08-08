@@ -53,11 +53,11 @@ public class OpenDiffViewAction extends AnAction {
     @NotNull
     private SimpleDiffRequest createSimpleRequest(VirtualFile virtualFile, DiffContent document1, DiffContent document2) {
         return new WhackDiffRequest(
-                "Window Title",
+                virtualFile.getName(),
                 document1,
                 document2,
-                "Title 1",
-                "Title 2",
+                "Original",
+                "Preprocessed",
                 virtualFile.getFileType());
     }
 
