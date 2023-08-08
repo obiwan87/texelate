@@ -5,19 +5,18 @@ import com.intellij.diff.requests.DiffRequest;
 import com.intellij.diff.tools.simple.SimpleDiffViewer;
 import com.intellij.diff.util.Side;
 import com.intellij.lang.Language;
-import com.intellij.lang.xml.XMLLanguage;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.ex.DocumentEx;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.lasagnerd.whack.environments.model.Environment;
 import com.lasagnerd.whack.environments.model.EnvironmentsModelService;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.yaml.YAMLLanguage;
 
 import java.util.List;
 
@@ -31,11 +30,24 @@ public class WhackDiffViewer extends SimpleDiffViewer {
                                DocumentEx originalDocument,
                                DocumentEx preprocessedDocument,
                                String env) {
-        Language language = switch (fileType.getName().toUpperCase()) {
-            case "XML" -> XMLLanguage.INSTANCE;
-            case "YAML", "YML" -> YAMLLanguage.INSTANCE;
-            default -> throw new RuntimeException("Unsupported file type: " + fileType.getName());
-        };
+
+        Language language = null;
+        String defaultExtension = fileType.getDefaultExtension();
+        for (Language l : Language.getRegisteredLanguages().stream().toList()) {
+            LanguageFileType associatedFileType = l.getAssociatedFileType();
+            if(associatedFileType == null) {
+                continue;
+            }
+            String languageExtension = associatedFileType.getDefaultExtension();
+            if (languageExtension.equals(defaultExtension)) {
+                language = l;
+                break;
+            }
+        }
+
+        if(language == null) {
+            language = Language.ANY;
+        }
 
         PsiFile psiFile = PsiFileFactory.getInstance(eventProject)
                 .createFileFromText(language, originalDocument.getText());
