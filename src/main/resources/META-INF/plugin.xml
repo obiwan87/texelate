@@ -1,11 +1,13 @@
 <idea-plugin>
-    <id>com.lasagnerd.whack</id>
-    <name>Whack</name>
-    <version>1.1</version>
+    <id>com.lasagnerd.texelate</id>
+    <name>Texelate</name>
+    <version>0.0.5</version>
     <vendor email="lasagnerd@googlemail.com" url="http://lasagnerd.com">Lasagnerd</vendor>
 
     <description><![CDATA[
-      Whacky code for whacky plugins. This is just a playground
+      Texelate is a plugin for IntelliJ IDEA that adds support for the Texelate language.
+      Texelate is a simple templating language that allows you to use conditional rendering,
+      property interpolation and XML block inclusion.
     ]]></description>
 
     <change-notes><![CDATA[
@@ -25,57 +27,57 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <multiHostInjector implementation="com.lasagnerd.whack.injection.IfStatementExpressionInjector"/>
+        <multiHostInjector implementation="com.lasagnerd.texelate.injection.IfStatementExpressionInjector"/>
         <lang.foldingBuilder language="XML"
-                             implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"/>
+                             implementationClass="com.lasagnerd.texelate.injection.IfStatementFoldingBuilder"/>
         <lang.foldingBuilder language="yaml"
-                             implementationClass="com.lasagnerd.whack.injection.IfStatementFoldingBuilder"
+                             implementationClass="com.lasagnerd.texelate.injection.IfStatementFoldingBuilder"
 
         />
 
 
-        <fileType name="whack"
-                  language="Whack"
+        <fileType name="texelate"
+                  language="Microbool"
                   fieldName="INSTANCE"
-                  extensions="whack"
-                  implementationClass="com.lasagnerd.whack.lang.WhackFileType"/>
-        <lang.parserDefinition language="Whack" implementationClass="com.lasagnerd.whack.lang.WhackParserDefinition"/>
+                  extensions="texelate"
+                  implementationClass="com.lasagnerd.texelate.microbool.MicroboolFileType"/>
+        <lang.parserDefinition language="Microbool" implementationClass="com.lasagnerd.texelate.microbool.MicroboolParserDefinition"/>
 
         <fileType name="preprocessor"
                   language="Preprocessor"
                   fieldName="INSTANCE"
                   extensions="pre"
-                  implementationClass="com.lasagnerd.whack.preprocessor.lang.PreprocessorFileType"/>
-        <lang.parserDefinition language="Preprocessor" implementationClass="com.lasagnerd.whack.preprocessor.lang.PreprocessorParserDefinition"/>
+                  implementationClass="com.lasagnerd.texelate.ifblocks.PreprocessorFileType"/>
+        <lang.parserDefinition language="Preprocessor" implementationClass="com.lasagnerd.texelate.ifblocks.PreprocessorParserDefinition"/>
 
-        <lang.syntaxHighlighterFactory language="Whack"
-                                       implementationClass="com.lasagnerd.whack.lang.WhackSyntaxHighlighterFactory"/>
-        <annotator language="XML" implementationClass="com.lasagnerd.whack.injection.IfStatementAnnotator"/>
-        <psi.referenceContributor implementation="com.lasagnerd.whack.completion.PropertiesReferenceContributor" language="Whack"/>
-        <completion.contributor language="Whack"
-                                implementationClass="com.lasagnerd.whack.completion.WhackCompletionContributor"/>
-        <lang.elementManipulator forClass="com.lasagnerd.whack.lang.psi.impl.WhackReferenceExpressionImpl"
-                                 implementationClass="com.lasagnerd.whack.refactoring.WhackReferenceManipulator"/>
-        <annotator language="Whack" implementationClass="com.lasagnerd.whack.analysis.WhackAnnotator"/>
-        <diff.DiffTool implementation="com.lasagnerd.whack.diff.WhackDiffTool"/>
+        <lang.syntaxHighlighterFactory language="Microbool"
+                                       implementationClass="com.lasagnerd.texelate.microbool.MicroboolSyntaxHighlighterFactory"/>
+        <annotator language="XML" implementationClass="com.lasagnerd.texelate.injection.IfStatementAnnotator"/>
+        <psi.referenceContributor implementation="com.lasagnerd.texelate.completion.PropertiesReferenceContributor" language="Microbool"/>
+        <completion.contributor language="Microbool"
+                                implementationClass="com.lasagnerd.texelate.completion.TexelateCompletionContributor"/>
+        <lang.elementManipulator forClass="com.lasagnerd.texelate.microbool.psi.impl.TexelateReferenceExpressionImpl"
+                                 implementationClass="com.lasagnerd.texelate.refactoring.TexelateReferenceManipulator"/>
+        <annotator language="Microbool" implementationClass="com.lasagnerd.texelate.analysis.TexelateAnnotator"/>
+        <diff.DiffTool implementation="com.lasagnerd.texelate.diff.TexelateDiffTool"/>
 
-        <projectService serviceImplementation="com.lasagnerd.whack.environments.model.EnvironmentsConfigPersistentState"
-                        id="com.lasagnerd.whack.environments.model.EnvironmentsConfigPersistentState"/>
+        <projectService serviceImplementation="com.lasagnerd.texelate.environments.model.EnvironmentsConfigPersistentState"
+                        id="com.lasagnerd.texelate.environments.model.EnvironmentsConfigPersistentState"/>
 
-        <projectService serviceImplementation="com.lasagnerd.whack.environments.model.EnvironmentsModelService"
-                        order="after com.lasagnerd.whack.environments.model.EnvironmentsConfigPersistentState"/>
+        <projectService serviceImplementation="com.lasagnerd.texelate.environments.model.EnvironmentsModelService"
+                        order="after com.lasagnerd.texelate.environments.model.EnvironmentsConfigPersistentState"/>
 
-        <toolWindow factoryClass="com.lasagnerd.whack.environments.toolWindow.EnvironmentsToolWindowFactory"
+        <toolWindow factoryClass="com.lasagnerd.texelate.environments.toolWindow.EnvironmentsToolWindowFactory"
                     id="Environments"
                     secondary="true"
-                    icon="/icons/whack_icon_dark.svg">
+                    icon="/icons/texelate_icon_dark.svg">
 
         </toolWindow>
     </extensions>
 
 
     <actions>
-        <action id="com.lasagnerd.whack.diff.OpenDiffViewAction" class="com.lasagnerd.whack.diff.OpenDiffViewAction"
+        <action id="com.lasagnerd.texelate.diff.OpenDiffViewAction" class="com.lasagnerd.texelate.diff.OpenDiffViewAction"
                 text="Compare to Preprocessed File ..."
                 description="Compares the current file with its preprocessed version"
                 icon="AllIcons.Actions.Diff">
@@ -84,14 +86,14 @@
 
 
         <action class="com.intellij.openapi.actionSystem.Separator"
-                id="com.lasagnerd.whack.environments.actions.AddToEnvironmentActionGroup.separator">
+                id="com.lasagnerd.texelate.environments.actions.AddToEnvironmentActionGroup.separator">
             <add-to-group group-id="ProjectViewPopupMenu"
                           anchor="before"
-                          relative-to-action="com.lasagnerd.whack.environments.actions.AddToEnvironmentActionGroup"/>
+                          relative-to-action="com.lasagnerd.texelate.environments.actions.AddToEnvironmentActionGroup"/>
         </action>
 
-        <group id="com.lasagnerd.whack.environments.actions.AddToEnvironmentActionGroup"
-               class="com.lasagnerd.whack.environments.actions.AddToEnvironmentActionGroup"
+        <group id="com.lasagnerd.texelate.environments.actions.AddToEnvironmentActionGroup"
+               class="com.lasagnerd.texelate.environments.actions.AddToEnvironmentActionGroup"
                text="Add To Environment ..."
                popup="true"
                description="Adds a file or directory to an environment"

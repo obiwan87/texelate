@@ -1,0 +1,69 @@
+// This is a generated file. Not intended for manual editing.
+package com.lasagnerd.texelate.ifblocks.psi.impl;
+
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.lasagnerd.texelate.ifblocks.psi.PreprocessorIfBlock;
+import com.lasagnerd.texelate.ifblocks.psi.PreprocessorSemicolonIfBlock;
+import com.lasagnerd.texelate.ifblocks.psi.PreprocessorTextBlock;
+import com.lasagnerd.texelate.ifblocks.psi.PreprocessorVisitor;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+
+import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.SEMICOLON_CLOSING_IF;
+import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.SEMICOLON_OPENING_IF;
+
+public class PreprocessorSemicolonIfBlockImpl extends PreprocessorIfBlockImpl implements PreprocessorSemicolonIfBlock {
+
+  public PreprocessorSemicolonIfBlockImpl(@NotNull ASTNode node) {
+    super(node);
+  }
+
+  @Override
+  public void accept(@NotNull PreprocessorVisitor visitor) {
+    visitor.visitSemicolonIfBlock(this);
+  }
+
+  @Override
+  public void accept(@NotNull PsiElementVisitor visitor) {
+    if (visitor instanceof PreprocessorVisitor) accept((PreprocessorVisitor)visitor);
+    else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public List<PreprocessorIfBlock> getIfBlockList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorIfBlock.class);
+  }
+
+  @Override
+  @NotNull
+  public List<PreprocessorTextBlock> getTextBlockList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorTextBlock.class);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getSemicolonClosingIf() {
+    return findNotNullChildByType(SEMICOLON_CLOSING_IF);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getSemicolonOpeningIf() {
+    return findNotNullChildByType(SEMICOLON_OPENING_IF);
+  }
+
+  @Override
+  public String getOpeningStatement() {
+    return getSemicolonOpeningIf().getText();
+  }
+
+  @Override
+  public String getClosingStatement() {
+    return getSemicolonClosingIf().getText();
+  }
+}
