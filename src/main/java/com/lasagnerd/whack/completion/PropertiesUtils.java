@@ -35,7 +35,18 @@ public class PropertiesUtils {
 
     @NotNull
     public static Collection<VirtualFile> getPropertiesVirtualFiles(@NotNull Project project) {
-        return FilenameIndex.getAllFilesByExt(project, "properties");
+
+        List<String> files = project.getService(EnvironmentsModelService.class).getEnvironmentsConfig()
+                .getEnvironments().stream()
+                .map(Environment::getPaths)
+                .flatMap(Collection::stream)
+                .toList();
+
+        // Find all virtual files with .properties extension
+        return FilenameIndex.getAllFilesByExt(project, "properties")
+                .stream()
+                .filter(x -> files.stream().anyMatch(x.getPath()::contains))
+                .collect(Collectors.toList());
     }
 
     public static List<PropertiesFile> getPropertiesFiles(@NotNull Project project) {
