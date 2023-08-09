@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class TexelateCompletionContributor extends CompletionContributor {
-    public TexelateCompletionContributor() {
+public class MicroboolCompletionContributor extends CompletionContributor {
+    public MicroboolCompletionContributor() {
         extend(
                 CompletionType.BASIC,
                 PlatformPatterns.psiElement(WhackTypes.IDENTIFIER),

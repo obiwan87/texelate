@@ -30,7 +30,7 @@ public class IfStatementExpressionInjector implements MultiHostInjector {
 
             Matcher matcher = pattern.matcher(commentText);
             if (matcher.find()) {
-                Language language = Language.findLanguageByID("Whack");
+                Language language = Language.findLanguageByID("Microbool");
 
                 if (language != null) {
                     //group(0)?if_

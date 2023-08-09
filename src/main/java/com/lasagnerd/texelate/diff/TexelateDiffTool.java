@@ -10,7 +10,7 @@ public class TexelateDiffTool implements FrameDiffTool {
     @Override
     public @NotNull
     @Nls(capitalization = Nls.Capitalization.Sentence) String getName() {
-        return "WhackDiffTool";
+        return "TexelateDiffTool";
     }
 
     @Override

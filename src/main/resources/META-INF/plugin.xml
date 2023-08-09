@@ -55,10 +55,10 @@
         <annotator language="XML" implementationClass="com.lasagnerd.texelate.injection.IfStatementAnnotator"/>
         <psi.referenceContributor implementation="com.lasagnerd.texelate.completion.PropertiesReferenceContributor" language="Microbool"/>
         <completion.contributor language="Microbool"
-                                implementationClass="com.lasagnerd.texelate.completion.TexelateCompletionContributor"/>
+                                implementationClass="com.lasagnerd.texelate.completion.MicroboolCompletionContributor"/>
         <lang.elementManipulator forClass="com.lasagnerd.texelate.microbool.psi.impl.TexelateReferenceExpressionImpl"
                                  implementationClass="com.lasagnerd.texelate.refactoring.TexelateReferenceManipulator"/>
-        <annotator language="Microbool" implementationClass="com.lasagnerd.texelate.analysis.TexelateAnnotator"/>
+        <annotator language="Microbool" implementationClass="com.lasagnerd.texelate.analysis.MicroboolAnnotator"/>
         <diff.DiffTool implementation="com.lasagnerd.texelate.diff.TexelateDiffTool"/>
 
         <projectService serviceImplementation="com.lasagnerd.texelate.environments.model.EnvironmentsConfigPersistentState"

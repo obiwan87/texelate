@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 @State(
         name = "com.lasagnerd.whack.environments.model.EnvironmentsConfigPersistentState",
-        storages = @Storage("WhackEnvironments.xml")
+        storages = @Storage("TexelateEnvironments.xml")
 )
 public class EnvironmentsConfigPersistentState implements PersistentStateComponent<EnvironmentsConfigPersistentState> {
     public EnvironmentsConfig environmentConfig = new EnvironmentsConfig();

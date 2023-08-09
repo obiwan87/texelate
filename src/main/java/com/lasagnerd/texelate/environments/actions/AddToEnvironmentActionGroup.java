@@ -52,7 +52,7 @@ public class AddToEnvironmentActionGroup extends DefaultActionGroup {
 
         boolean enabled = Arrays.stream(files).anyMatch(f -> f.isDirectory()
                 || "properties".equals(f.getExtension())
-                || "whack".equals(f.getExtension()));
+                || "texelate".equals(f.getExtension()));
         e.getPresentation().setEnabled(enabled);
     }
 }

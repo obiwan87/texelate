@@ -21,17 +21,17 @@ public class MicroboolFileType extends LanguageFileType {
 
     @Override
     public @NonNls @NotNull String getName() {
-        return "whack";
+        return "microbool";
     }
 
     @Override
     public @NlsContexts.Label @NotNull String getDescription() {
-        return "Whack templating language";
+        return "Microbool templating language";
     }
 
     @Override
     public @NlsSafe @NotNull String getDefaultExtension() {
-        return "whack";
+        return "microbool";
     }
 
     @Override
