@@ -1,4 +1,4 @@
-# whack
+# Texelate
 
 A whack IntelliJ Plugin
 

@@ -7,7 +7,6 @@ import com.intellij.lang.properties.IProperty;
 import com.intellij.lang.properties.PropertiesImplUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import com.lasagnerd.texelate.environments.model.Environment;
 import com.lasagnerd.texelate.environments.model.EnvironmentsModelService;
 import com.lasagnerd.texelate.microbool.psi.WhackReferenceExpression;
 import org.jetbrains.annotations.NotNull;
