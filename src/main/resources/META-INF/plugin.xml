@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.lasagnerd.texelate</id>
     <name>Texelate</name>
-    <version>0.0.6</version>
+    <version>1.10</version>
     <vendor email="lasagnerd@googlemail.com" url="http://lasagnerd.com">Lasagnerd</vendor>
 
     <description><![CDATA[
@@ -53,7 +53,8 @@
         <lang.syntaxHighlighterFactory language="Microbool"
                                        implementationClass="com.lasagnerd.texelate.microbool.MicroboolSyntaxHighlighterFactory"/>
         <annotator language="XML" implementationClass="com.lasagnerd.texelate.injection.IfStatementAnnotator"/>
-        <psi.referenceContributor implementation="com.lasagnerd.texelate.completion.PropertiesReferenceContributor" language="Microbool"/>
+        <psi.referenceContributor implementation="com.lasagnerd.texelate.completion.PropertiesReferenceContributor"
+                                  language="Microbool"/>
         <completion.contributor language="Microbool"
                                 implementationClass="com.lasagnerd.texelate.completion.MicroboolCompletionContributor"/>
         <lang.elementManipulator forClass="com.lasagnerd.texelate.microbool.psi.impl.TexelateReferenceExpressionImpl"
