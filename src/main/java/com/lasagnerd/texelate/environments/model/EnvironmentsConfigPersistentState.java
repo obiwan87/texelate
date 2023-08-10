@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @State(
-        name = "com.lasagnerd.whack.environments.model.EnvironmentsConfigPersistentState",
+        name = "com.lasagnerd.microbool.environments.model.EnvironmentsConfigPersistentState",
         storages = @Storage("TexelateEnvironments.xml")
 )
 public class EnvironmentsConfigPersistentState implements PersistentStateComponent<EnvironmentsConfigPersistentState> {

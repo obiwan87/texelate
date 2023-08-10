@@ -16,19 +16,18 @@ public class IfStatementAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         // Ensure the Psi Element is an expression
-        if (!(element instanceof PsiComment)) {
+        if (!(element instanceof PsiComment comment)) {
             return;
         }
 
         // Ensure the Psi element contains a string that starts with the prefix and separator
-        PsiComment comment = (PsiComment) element;
         String value = comment.getText();
 
         {
             Pattern pattern = Pattern.compile("^(.*)(\\?if)(.*?)(-->)");
             Matcher matcher = pattern.matcher(value);
             if (matcher.find()) {
-                highlightOpeningIf(element, holder, matcher);
+                highlightMatch(element, holder, matcher);
             }
         }
 
@@ -36,23 +35,28 @@ public class IfStatementAnnotator implements Annotator {
             Pattern pattern = Pattern.compile("^(.*)(\\?endif).*");
             Matcher matcher = pattern.matcher(value);
             if (matcher.find()) {
-                highlightClosingIf(element, holder, matcher);
+                highlightMatch(element, holder, matcher);
             }
+        }
 
+        {
+            Pattern pattern = Pattern.compile("^(.*)(\\?exclude).*");
+            Matcher matcher = pattern.matcher(value);
+            if (matcher.find()) {
+                highlightMatch(element, holder, matcher);
+            }
+        }
+
+        {
+            Pattern pattern = Pattern.compile("^(.*)(\\?else).*");
+            Matcher matcher = pattern.matcher(value);
+            if (matcher.find()) {
+                highlightMatch(element, holder, matcher);
+            }
         }
     }
 
-    private void highlightClosingIf(@NotNull PsiElement element, @NotNull AnnotationHolder holder, Matcher matcher) {
-        String prefix = matcher.group(1);
-        String endifStatement = matcher.group(2);
-        TextRange endifStatementRange = TextRange.from(element.getTextRange().getStartOffset() + prefix.length(), endifStatement.length());
-        holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(endifStatementRange).textAttributes(DefaultLanguageHighlighterColors.KEYWORD).create();
-
-        highlightComment(holder, element, matcher.group(0));
-    }
-
-    private void highlightOpeningIf(@NotNull PsiElement element, @NotNull AnnotationHolder holder, Matcher matcher) {
+    private void highlightMatch(@NotNull PsiElement element, @NotNull AnnotationHolder holder, Matcher matcher) {
         // Define the text ranges (start is inclusive, end is exclusive)
         // "?if>"
 
@@ -64,8 +68,7 @@ public class IfStatementAnnotator implements Annotator {
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .range(ifStatementRange).textAttributes(DefaultLanguageHighlighterColors.KEYWORD).create();
 
-        String match = matcher.group(0);
-        highlightComment(holder, element, match);
+        highlightComment(holder, element, matcher.group(0));
     }
 
     private void highlightComment(@NotNull AnnotationHolder holder, @NotNull PsiElement element, String match) {

@@ -1,6 +1,6 @@
 # Texelate
 
-A whack IntelliJ Plugin
+A Microbool IntelliJ Plugin
 
 ## Resources
 - List of Extensions

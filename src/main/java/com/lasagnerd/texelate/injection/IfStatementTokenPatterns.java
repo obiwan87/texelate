@@ -9,9 +9,13 @@ import java.util.regex.Pattern;
 
 public class IfStatementTokenPatterns {
     public static final Pattern XML_OPENING_IF_STATEMENT_PATTERN = Pattern.compile("^(.*\\?if\\s+)(.*?)(-->)");
+    public static final Pattern XML_EXCLUDE_STATEMENT_PREFIX = Pattern.compile("^(.*\\?exclude\\s+)(.*?)(-->)");
+
     public static final Pattern GENERIC_OPENING_IF_STATEMENT_PATTERN = Pattern.compile("^(.*\\?if\\s+)(.*)");
     public static final Pattern OPENING_IF_STATEMENT_PREFIX = Pattern.compile(".*\\?if.*");
     public static final Pattern CLOSING_IF_STATEMENT_PREFIX = Pattern.compile(".*\\?endif.*");
+    public static final Pattern ELSE_STATEMENT_PREFIX = Pattern.compile(".*\\?else.*");
+    public static final Pattern EXCLUDE_STATEMENT_PREFIX = Pattern.compile(".*\\?exclude.*");
 
     @Value
     public static class IfStatement {

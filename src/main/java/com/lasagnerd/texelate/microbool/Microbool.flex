@@ -4,18 +4,18 @@ import com.intellij.psi.tree.IElementType;
 
 import static com.intellij.psi.TokenType.BAD_CHARACTER;
 import static com.intellij.psi.TokenType.WHITE_SPACE;
-import static com.lasagnerd.texelate.microbool.psi.WhackTypes.*;
+import static com.lasagnerd.texelate.microbool.psi.MicroboolTypes.*;
 
 %%
 
 %{
-  public WhackLexer() {
+  public MicroboolLexer() {
     this((java.io.Reader)null);
   }
 %}
 
 %public
-%class WhackLexer
+%class MicroboolLexer
 %implements FlexLexer
 %function advance
 %type IElementType

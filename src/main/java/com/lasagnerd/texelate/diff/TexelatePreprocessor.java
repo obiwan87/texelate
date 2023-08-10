@@ -93,16 +93,16 @@ public class TexelatePreprocessor {
                     IfStatement ifStatement = ifStatementOptional.get();
                     String expression = ifStatement.getExpression().trim();
 
-                    PsiFile whackPsiFile = PsiFileFactory.getInstance(project).createFileFromText(MicroboolLanguage.INSTANCE, expression);
-                    if (whackPsiFile instanceof MicroboolFile) {
-                        boolean interpretedValue = TexelateInterpreter.interpret(variables, (MicroboolFile) whackPsiFile);
+                    PsiFile microboolPsiFile = PsiFileFactory.getInstance(project).createFileFromText(MicroboolLanguage.INSTANCE, expression);
+                    if (microboolPsiFile instanceof MicroboolFile) {
+                        boolean interpretedValue = TexelateInterpreter.interpret(variables, (MicroboolFile) microboolPsiFile);
                                                                         if (interpretedValue) {
                             for (PsiElement child : preprocessorIfBlock.getChildren()) {
                                 processChild(child);
                             }
                         }
                     } else {
-                        throw new IllegalStateException(String.format("'%s' in if statement valid Whack Expression", expression));
+                        throw new IllegalStateException(String.format("'%s' in if statement valid Microbool Expression", expression));
                     }
                 }
             } else {

@@ -8,25 +8,25 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import com.lasagnerd.texelate.microbool.psi.WhackTypes;
+import com.lasagnerd.texelate.microbool.psi.MicroboolTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
-import static com.lasagnerd.texelate.microbool.psi.WhackTypes.*;
+import static com.lasagnerd.texelate.microbool.psi.MicroboolTypes.*;
 
 public class MicroboolSyntaxHighlighter extends SyntaxHighlighterBase {
 
 
     public static final TextAttributesKey BAD_CHARACTER =
-            createTextAttributesKey("WHACK_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
+            createTextAttributesKey("Microbool_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
     public static final TextAttributesKey KEYWORD =
-            createTextAttributesKey("WHACK_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
+            createTextAttributesKey("Microbool_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
 
     public static final TextAttributesKey IDENTIFIER =
-            createTextAttributesKey("WHACK_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER);
+            createTextAttributesKey("Microbool_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER);
 
 
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
@@ -46,7 +46,7 @@ public class MicroboolSyntaxHighlighter extends SyntaxHighlighterBase {
             return BAD_CHAR_KEYS;
         }
 
-        if (tokenType.equals(WhackTypes.IDENTIFIER)) {
+        if (tokenType.equals(MicroboolTypes.IDENTIFIER)) {
             return IDENTIFIER_KEYS;
         }
 

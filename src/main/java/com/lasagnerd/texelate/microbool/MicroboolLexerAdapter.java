@@ -4,6 +4,6 @@ import com.intellij.lexer.FlexAdapter;
 
 public class MicroboolLexerAdapter extends FlexAdapter {
     public MicroboolLexerAdapter() {
-        super(new WhackLexer(null));
+        super(new MicroboolLexer(null));
     }
 }

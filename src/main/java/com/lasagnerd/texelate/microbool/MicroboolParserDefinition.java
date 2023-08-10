@@ -12,7 +12,8 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.lasagnerd.texelate.microbool.psi.MicroboolFile;
-import com.lasagnerd.texelate.microbool.psi.WhackTypes;
+import com.lasagnerd.texelate.microbool.psi.MicroboolTypes;
+import com.lasagnerd.texelate.microbool.psi.MicroboolTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class MicroboolParserDefinition implements ParserDefinition {
@@ -28,7 +29,7 @@ public class MicroboolParserDefinition implements ParserDefinition {
 
     @Override
     public @NotNull PsiParser createParser(Project project) {
-        return new WhackParser();
+        return new MicroboolParser();
     }
 
     @Override
@@ -48,7 +49,7 @@ public class MicroboolParserDefinition implements ParserDefinition {
 
     @Override
     public @NotNull PsiElement createElement(ASTNode node) {
-        return WhackTypes.Factory.createElement(node);
+        return MicroboolTypes.Factory.createElement(node);
     }
 
     @Override

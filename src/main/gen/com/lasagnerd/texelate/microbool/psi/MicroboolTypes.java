@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
 import com.lasagnerd.texelate.microbool.psi.impl.*;
 
-public interface WhackTypes {
+public interface MicroboolTypes {
 
   IElementType BINARY_EXPRESSION = new MicroboolElementType("BINARY_EXPRESSION");
   IElementType BINARY_OPERATOR = new MicroboolElementType("BINARY_OPERATOR");
@@ -33,31 +33,31 @@ public interface WhackTypes {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
       if (type == BINARY_EXPRESSION) {
-        return new WhackBinaryExpressionImpl(node);
+        return new MicroboolBinaryExpressionImpl(node);
       }
       else if (type == BINARY_OPERATOR_AND) {
-        return new WhackBinaryOperatorAndImpl(node);
+        return new MicroboolBinaryOperatorAndImpl(node);
       }
       else if (type == BINARY_OPERATOR_EQUALITY) {
-        return new WhackBinaryOperatorEqualityImpl(node);
+        return new MicroboolBinaryOperatorEqualityImpl(node);
       }
       else if (type == BINARY_OPERATOR_INEQUALITY) {
-        return new WhackBinaryOperatorInequalityImpl(node);
+        return new MicroboolBinaryOperatorInequalityImpl(node);
       }
       else if (type == BINARY_OPERATOR_OR) {
-        return new WhackBinaryOperatorOrImpl(node);
+        return new MicroboolBinaryOperatorOrImpl(node);
       }
       else if (type == BOOL_LITERAL_EXPRESSION) {
-        return new WhackBoolLiteralExpressionImpl(node);
+        return new MicroboolBoolLiteralExpressionImpl(node);
       }
       else if (type == REFERENCE_EXPRESSION) {
-        return new WhackReferenceExpressionImpl(node);
+        return new MicroboolReferenceExpressionImpl(node);
       }
       else if (type == UNARY_EXPRESSION) {
-        return new WhackUnaryExpressionImpl(node);
+        return new MicroboolUnaryExpressionImpl(node);
       }
       else if (type == UNARY_OPERATOR_NOT) {
-        return new WhackUnaryOperatorNotImpl(node);
+        return new MicroboolUnaryOperatorNotImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

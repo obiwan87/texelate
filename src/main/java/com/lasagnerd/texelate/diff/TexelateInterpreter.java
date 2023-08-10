@@ -1,14 +1,17 @@
 package com.lasagnerd.texelate.diff;
 
 import com.intellij.psi.PsiElement;
-import com.lasagnerd.texelate.microbool.psi.MicroboolFile;
-import com.lasagnerd.texelate.microbool.psi.WhackBinaryExpression;
-import com.lasagnerd.texelate.microbool.psi.WhackExpression;
+import com.lasagnerd.texelate.microbool.MicroboolInterpreter;
+import com.lasagnerd.texelate.microbool.psi.*;
 
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TexelateInterpreter {
+
+
 
     private TexelateInterpreter() {
 
@@ -16,11 +19,9 @@ public class TexelateInterpreter {
 
     public static boolean interpret(Map<String, Object> variables, MicroboolFile microboolFile) {
         PsiElement firstChild = microboolFile.getFirstChild();
-        if(firstChild instanceof WhackExpression root) {
+        if(firstChild instanceof MicroboolExpression root) {
             try {
-
-                boolean result = root.evaluate(variables);
-                                return result;
+                return MicroboolInterpreter.evaluate(root, variables);
             } catch (Exception e) {
                 throw new RuntimeException("Interpretation failed", e);
             }
@@ -33,9 +34,9 @@ public class TexelateInterpreter {
     }
 
     private void process(PsiElement child) {
-        if(child instanceof WhackBinaryExpression) {
-            WhackBinaryExpression whackBinaryExpr = (WhackBinaryExpression) child;
-            List<WhackExpression> expressionList = whackBinaryExpr.getExpressionList();
+        if(child instanceof MicroboolBinaryExpression) {
+            MicroboolBinaryExpression MicroboolBinaryExpr = (MicroboolBinaryExpression) child;
+            List<MicroboolExpression> expressionList = MicroboolBinaryExpr.getExpressionList();
             int i = 0;
         }
     }

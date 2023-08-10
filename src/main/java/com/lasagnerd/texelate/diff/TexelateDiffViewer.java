@@ -77,7 +77,7 @@ public class TexelateDiffViewer extends SimpleDiffViewer {
             return toolbarActions;
         }
 
-        throw new RuntimeException("WhackDiffViewer can only be used with WhackDiffRequest");
+        throw new RuntimeException("MicroboolDiffViewer can only be used with MicroboolDiffRequest");
     }
 
     @Override

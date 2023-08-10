@@ -6,8 +6,8 @@
 
   psiClassPrefix="Preprocessor"
   psiImplClassSuffix="Impl"
-  psiPackage="com.lasagnerd.texelate.preprocessor.lang.psi"
-  psiImplPackage="com.lasagnerd.texelate.preprocessor.lang.psi.impl"
+  psiPackage="com.lasagnerd.texelate.ifblocks.psi"
+  psiImplPackage="com.lasagnerd.texelate.ifblocks.psi.impl"
 
   elementTypeHolderClass="com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes"
   elementTypeClass="com.lasagnerd.texelate.ifblocks.psi.PreprocessorElementType"

@@ -22,14 +22,22 @@ public class IfStatementExpressionInjector implements MultiHostInjector {
         if (context instanceof PsiComment psiComment && context instanceof PsiLanguageInjectionHost) {
             String commentText = psiComment.getText();
             Pattern pattern;
+            Pattern excludePattern;
             if (context.getLanguage().getID().equals("XML")) {
                 pattern = IfStatementTokenPatterns.XML_OPENING_IF_STATEMENT_PATTERN;
+                excludePattern = IfStatementTokenPatterns.XML_EXCLUDE_STATEMENT_PREFIX;
             } else {
                 pattern = IfStatementTokenPatterns.GENERIC_OPENING_IF_STATEMENT_PATTERN;
+                excludePattern = IfStatementTokenPatterns.EXCLUDE_STATEMENT_PREFIX;
             }
 
             Matcher matcher = pattern.matcher(commentText);
-            if (matcher.find()) {
+            boolean match = matcher.find();
+            if(!match) {
+                matcher = excludePattern.matcher(commentText);
+                match = matcher.find();
+            }
+            if (match) {
                 Language language = Language.findLanguageByID("Microbool");
 
                 if (language != null) {

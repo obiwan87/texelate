@@ -1,14 +1,16 @@
 {
-  parserClass="com.lasagnerd.texelate.microbool.WhackParser"
+  parserClass="com.lasagnerd.texelate.microbool.MicroboolParser"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
-  psiClassPrefix="Whack"
+
+
+  psiClassPrefix="Microbool"
   psiImplClassSuffix="Impl"
   psiPackage="com.lasagnerd.texelate.microbool.psi"
   psiImplPackage="com.lasagnerd.texelate.microbool.psi.impl"
 
-  elementTypeHolderClass="com.lasagnerd.texelate.microbool.psi.WhackTypes"
+  elementTypeHolderClass="com.lasagnerd.texelate.microbool.psi.MicroboolTypes"
   elementTypeClass="com.lasagnerd.texelate.microbool.psi.MicroboolElementType"
   tokenTypeClass="com.lasagnerd.texelate.microbool.psi.MicroboolTokenType"
 

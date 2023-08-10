@@ -3,13 +3,11 @@ package com.lasagnerd.texelate.microbool.psi;
 
 import java.util.List;
 import org.jetbrains.annotations.*;
+import com.intellij.psi.PsiElement;
 
-public interface WhackBinaryExpression extends WhackExpression {
-
-  @NotNull
-  WhackBinaryOperator getBinaryOperator();
+public interface MicroboolReferenceExpression extends MicroboolExpression {
 
   @NotNull
-  List<WhackExpression> getExpressionList();
+  PsiElement getIdentifier();
 
 }

@@ -3,14 +3,14 @@ package com.lasagnerd.texelate.completion;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.*;
 import com.intellij.util.ProcessingContext;
-import com.lasagnerd.texelate.microbool.psi.WhackTypes;
+import com.lasagnerd.texelate.microbool.psi.MicroboolTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class PropertiesReferenceContributor extends PsiReferenceContributor {
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         registrar.registerReferenceProvider(
-                PlatformPatterns.psiElement(WhackTypes.IDENTIFIER),
+                PlatformPatterns.psiElement(MicroboolTypes.IDENTIFIER),
                 new PropertiesReferenceProvider()
         );
     }

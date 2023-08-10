@@ -3,7 +3,7 @@ package com.lasagnerd.texelate.microbool;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static com.lasagnerd.texelate.microbool.psi.WhackTypes.*;
+import static com.lasagnerd.texelate.microbool.psi.MicroboolTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
@@ -12,7 +12,7 @@ import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
-public class WhackParser implements PsiParser, LightPsiParser {
+public class MicroboolParser implements PsiParser, LightPsiParser {
 
   public ASTNode parse(IElementType t, PsiBuilder b) {
     parseLight(t, b);
@@ -32,7 +32,7 @@ public class WhackParser implements PsiParser, LightPsiParser {
   }
 
   static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
-    return whackFile(b, l + 1);
+    return microboolFile(b, l + 1);
   }
 
   public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
@@ -106,6 +106,12 @@ public class WhackParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // expression
+  static boolean microboolFile(PsiBuilder b, int l) {
+    return expression(b, l + 1, -1);
+  }
+
+  /* ********************************************************** */
   // unary_operator_not
   public static boolean unary_operator(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "unary_operator")) return false;
@@ -127,12 +133,6 @@ public class WhackParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, OPERATOR_NOT);
     exit_section_(b, m, UNARY_OPERATOR_NOT, r);
     return r;
-  }
-
-  /* ********************************************************** */
-  // expression
-  static boolean whackFile(PsiBuilder b, int l) {
-    return expression(b, l + 1, -1);
   }
 
   /* ********************************************************** */

@@ -6,7 +6,7 @@ import com.intellij.lang.properties.PropertiesIcons;
 import com.intellij.lang.properties.psi.Property;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.util.ProcessingContext;
-import com.lasagnerd.texelate.microbool.psi.WhackTypes;
+import com.lasagnerd.texelate.microbool.psi.MicroboolTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class MicroboolCompletionContributor extends CompletionContributor {
     public MicroboolCompletionContributor() {
         extend(
                 CompletionType.BASIC,
-                PlatformPatterns.psiElement(WhackTypes.IDENTIFIER),
+                PlatformPatterns.psiElement(MicroboolTypes.IDENTIFIER),
                 new CompletionParametersCompletionProvider()
 
         );

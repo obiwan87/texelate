@@ -8,7 +8,7 @@ import com.intellij.lang.properties.PropertiesImplUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.lasagnerd.texelate.environments.model.EnvironmentsModelService;
-import com.lasagnerd.texelate.microbool.psi.WhackReferenceExpression;
+import com.lasagnerd.texelate.microbool.psi.MicroboolReferenceExpression;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class MicroboolAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof WhackReferenceExpression))
+        if (!(element instanceof MicroboolReferenceExpression))
             return;
 
         List<IProperty> properties = PropertiesImplUtil.findPropertiesByKey(element.getProject(), element.getText());
