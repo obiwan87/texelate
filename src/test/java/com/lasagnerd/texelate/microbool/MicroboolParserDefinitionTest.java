@@ -26,8 +26,7 @@ class MicroboolParserDefinitionTest extends ParsingTestCase {
         return true;
     }
 
-    @Test
-    public void psiTreeTest() {
+    public void testPsiTreeTest() {
         doTest(true);
     }
 

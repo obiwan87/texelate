@@ -37,10 +37,10 @@ public class MicroboolParser implements PsiParser, LightPsiParser {
 
   public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
     create_token_set_(UNARY_OPERATOR, UNARY_OPERATOR_NOT),
-    create_token_set_(BINARY_EXPRESSION, BOOL_LITERAL_EXPRESSION, EXPRESSION, REFERENCE_EXPRESSION,
-      UNARY_EXPRESSION),
     create_token_set_(BINARY_OPERATOR, BINARY_OPERATOR_AND, BINARY_OPERATOR_EQUALITY, BINARY_OPERATOR_INEQUALITY,
       BINARY_OPERATOR_OR),
+    create_token_set_(BINARY_EXPRESSION, BOOL_LITERAL_EXPRESSION, DECIMAL_LITERAL_EXPRESSION, EXPRESSION,
+      INT_LITERAL_EXPRESSION, REFERENCE_EXPRESSION, STRING_LITERAL_EXPRESSION, UNARY_EXPRESSION),
   };
 
   /* ********************************************************** */
@@ -140,7 +140,8 @@ public class MicroboolParser implements PsiParser, LightPsiParser {
   // Operator priority table:
   // 0: BINARY(binary_expression)
   // 1: PREFIX(unary_expression)
-  // 2: ATOM(reference_expression) ATOM(bool_literal_expression)
+  // 2: ATOM(reference_expression) ATOM(bool_literal_expression) ATOM(string_literal_expression) ATOM(int_literal_expression)
+  //    ATOM(decimal_literal_expression)
   public static boolean expression(PsiBuilder b, int l, int g) {
     if (!recursion_guard_(b, l, "expression")) return false;
     addVariant(b, "<expression>");
@@ -149,6 +150,9 @@ public class MicroboolParser implements PsiParser, LightPsiParser {
     r = unary_expression(b, l + 1);
     if (!r) r = reference_expression(b, l + 1);
     if (!r) r = bool_literal_expression(b, l + 1);
+    if (!r) r = string_literal_expression(b, l + 1);
+    if (!r) r = int_literal_expression(b, l + 1);
+    if (!r) r = decimal_literal_expression(b, l + 1);
     p = r;
     r = r && expression_0(b, l + 1, g);
     exit_section_(b, l, m, null, r, p, null);
@@ -202,6 +206,39 @@ public class MicroboolParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, BOOL_LITERAL_EXPRESSION, "<expression>");
     r = consumeTokenSmart(b, BOOL);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // STRING_LITERAL
+  public static boolean string_literal_expression(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "string_literal_expression")) return false;
+    if (!nextTokenIsSmart(b, STRING_LITERAL)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, STRING_LITERAL_EXPRESSION, "<expression>");
+    r = consumeTokenSmart(b, STRING_LITERAL);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // INT_LITERAL
+  public static boolean int_literal_expression(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "int_literal_expression")) return false;
+    if (!nextTokenIsSmart(b, INT_LITERAL)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, INT_LITERAL_EXPRESSION, "<expression>");
+    r = consumeTokenSmart(b, INT_LITERAL);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // DECIMAL_LITERAL
+  public static boolean decimal_literal_expression(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "decimal_literal_expression")) return false;
+    if (!nextTokenIsSmart(b, DECIMAL_LITERAL)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, DECIMAL_LITERAL_EXPRESSION, "<expression>");
+    r = consumeTokenSmart(b, DECIMAL_LITERAL);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

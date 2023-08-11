@@ -15,19 +15,25 @@ public interface MicroboolTypes {
   IElementType BINARY_OPERATOR_INEQUALITY = new MicroboolElementType("BINARY_OPERATOR_INEQUALITY");
   IElementType BINARY_OPERATOR_OR = new MicroboolElementType("BINARY_OPERATOR_OR");
   IElementType BOOL_LITERAL_EXPRESSION = new MicroboolElementType("BOOL_LITERAL_EXPRESSION");
+  IElementType DECIMAL_LITERAL_EXPRESSION = new MicroboolElementType("DECIMAL_LITERAL_EXPRESSION");
   IElementType EXPRESSION = new MicroboolElementType("EXPRESSION");
+  IElementType INT_LITERAL_EXPRESSION = new MicroboolElementType("INT_LITERAL_EXPRESSION");
   IElementType REFERENCE_EXPRESSION = new MicroboolElementType("REFERENCE_EXPRESSION");
+  IElementType STRING_LITERAL_EXPRESSION = new MicroboolElementType("STRING_LITERAL_EXPRESSION");
   IElementType UNARY_EXPRESSION = new MicroboolElementType("UNARY_EXPRESSION");
   IElementType UNARY_OPERATOR = new MicroboolElementType("UNARY_OPERATOR");
   IElementType UNARY_OPERATOR_NOT = new MicroboolElementType("UNARY_OPERATOR_NOT");
 
   IElementType BOOL = new MicroboolTokenType("BOOL");
+  IElementType DECIMAL_LITERAL = new MicroboolTokenType("DECIMAL_LITERAL");
   IElementType IDENTIFIER = new MicroboolTokenType("IDENTIFIER");
+  IElementType INT_LITERAL = new MicroboolTokenType("INT_LITERAL");
   IElementType OPERATOR_AND = new MicroboolTokenType("and");
   IElementType OPERATOR_EQUALITY = new MicroboolTokenType("==");
   IElementType OPERATOR_INEQUALITY = new MicroboolTokenType("!=");
   IElementType OPERATOR_NOT = new MicroboolTokenType("not");
   IElementType OPERATOR_OR = new MicroboolTokenType("or");
+  IElementType STRING_LITERAL = new MicroboolTokenType("STRING_LITERAL");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
@@ -50,8 +56,17 @@ public interface MicroboolTypes {
       else if (type == BOOL_LITERAL_EXPRESSION) {
         return new MicroboolBoolLiteralExpressionImpl(node);
       }
+      else if (type == DECIMAL_LITERAL_EXPRESSION) {
+        return new MicroboolDecimalLiteralExpressionImpl(node);
+      }
+      else if (type == INT_LITERAL_EXPRESSION) {
+        return new MicroboolIntLiteralExpressionImpl(node);
+      }
       else if (type == REFERENCE_EXPRESSION) {
         return new MicroboolReferenceExpressionImpl(node);
+      }
+      else if (type == STRING_LITERAL_EXPRESSION) {
+        return new MicroboolStringLiteralExpressionImpl(node);
       }
       else if (type == UNARY_EXPRESSION) {
         return new MicroboolUnaryExpressionImpl(node);

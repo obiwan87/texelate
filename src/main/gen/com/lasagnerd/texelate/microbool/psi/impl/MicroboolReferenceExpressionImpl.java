@@ -21,26 +21,26 @@ import com.lasagnerd.texelate.microbool.psi.*;
 
 public class MicroboolReferenceExpressionImpl extends MicroboolExpressionImpl implements MicroboolReferenceExpression {
 
-    public MicroboolReferenceExpressionImpl(@NotNull ASTNode node) {
-        super(node);
-    }
+  public MicroboolReferenceExpressionImpl(@NotNull ASTNode node) {
+    super(node);
+  }
 
-    @Override
-    public void accept(@NotNull MicroboolVisitor visitor) {
-        visitor.visitReferenceExpression(this);
-    }
+  @Override
+  public void accept(@NotNull MicroboolVisitor visitor) {
+    visitor.visitReferenceExpression(this);
+  }
 
-    @Override
-    public void accept(@NotNull PsiElementVisitor visitor) {
-        if (visitor instanceof MicroboolVisitor) accept((MicroboolVisitor) visitor);
-        else super.accept(visitor);
-    }
+  @Override
+  public void accept(@NotNull PsiElementVisitor visitor) {
+    if (visitor instanceof MicroboolVisitor) accept((MicroboolVisitor)visitor);
+    else super.accept(visitor);
+  }
 
-    @Override
-    @NotNull
-    public PsiElement getIdentifier() {
-        return findNotNullChildByType(IDENTIFIER);
-    }
+  @Override
+  @NotNull
+  public PsiElement getIdentifier() {
+    return findNotNullChildByType(IDENTIFIER);
+  }
 
     @Override
     public PsiReference getReference() {

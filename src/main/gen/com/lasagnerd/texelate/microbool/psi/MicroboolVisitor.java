@@ -35,11 +35,23 @@ public class MicroboolVisitor extends PsiElementVisitor {
     visitExpression(o);
   }
 
+  public void visitDecimalLiteralExpression(@NotNull MicroboolDecimalLiteralExpression o) {
+    visitExpression(o);
+  }
+
   public void visitExpression(@NotNull MicroboolExpression o) {
     visitPsiElement(o);
   }
 
+  public void visitIntLiteralExpression(@NotNull MicroboolIntLiteralExpression o) {
+    visitExpression(o);
+  }
+
   public void visitReferenceExpression(@NotNull MicroboolReferenceExpression o) {
+    visitExpression(o);
+  }
+
+  public void visitStringLiteralExpression(@NotNull MicroboolStringLiteralExpression o) {
     visitExpression(o);
   }
 
