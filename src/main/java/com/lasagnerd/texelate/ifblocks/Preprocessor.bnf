@@ -42,13 +42,21 @@ private item ::= text_block | if_block | if_else_block
  if_block ::=  xml_if_block |
                hashtag_if_block |
                semicolon_if_block {
-                methods=[evaluate]
+                methods=[
+                         evaluate
+                         ifBranch
+                         elseBranch
+                        ]
                }
 
 if_else_block ::= xml_if_else_block |
                   hashtag_if_else_block |
                   semicolon_if_else_block {
-                     methods=[evaluate]
+                     methods=[
+                     evaluate
+                     ifBranch
+                     elseBranch
+                     ]
                  }
 
 

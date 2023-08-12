@@ -33,4 +33,14 @@ public abstract class PreprocessorIfBlockImpl extends ASTWrapperPsiElement imple
     return PreprocessorPsiUtil.evaluate(this, symbols);
   }
 
+  @Override
+  public @NotNull PsiElement ifBranch() {
+    return PreprocessorPsiUtil.ifBranch(this);
+  }
+
+  @Override
+  public PsiElement elseBranch() {
+    return PreprocessorPsiUtil.elseBranch(this);
+  }
+
 }

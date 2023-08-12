@@ -4,7 +4,6 @@ import com.intellij.psi.PsiElement;
 import com.lasagnerd.texelate.diff.TexelatePreprocessor;
 import com.lasagnerd.texelate.injection.IfStatementTokenPatterns;
 import com.lasagnerd.texelate.injection.IfStatementTokenPatterns.IfStatement;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -29,32 +28,33 @@ public class PreprocessorPsiUtil {
         return "";
     }
 
-    public static @NotNull String evaluate(PreprocessorIfElseBlock block, Map<String, Object> symbols) {
+    public static @NotNull String evaluate(ConditionalBlock block, Map<String, Object> symbols) {
         String ifCondition = getIfCondition(block);
         boolean condition = TexelatePreprocessor.evaluate(block.getProject(), symbols, ifCondition);
 
         StringBuilder text = new StringBuilder();
         if (condition) {
-
-            PsiElement ifBranch = getIfBranch(block);
+            PsiElement ifBranch = block.ifBranch();
             for (PsiElement child : ifBranch.getChildren()) {
                 if (child instanceof PreprocessorEvaluableBlock childBlock) {
                     text.append(childBlock.evaluate(symbols));
                 }
             }
         } else {
-            PsiElement elseBranch = getElseBranch(block);
-            for (PsiElement child : elseBranch.getChildren()) {
-                if (child instanceof PreprocessorEvaluableBlock childBlock) {
-                    text.append(childBlock.evaluate(symbols));
+            PsiElement elseBranch = block.elseBranch();
+            if(elseBranch != null) {
+                for (PsiElement child : elseBranch.getChildren()) {
+                    if (child instanceof PreprocessorEvaluableBlock childBlock) {
+                        text.append(childBlock.evaluate(symbols));
+                    }
                 }
             }
         }
         return text.toString();
     }
 
-    @Contract("null -> fail")
-    private static @NotNull PsiElement getIfBranch(PreprocessorIfElseBlock block) {
+
+    public static PsiElement ifBranch(ConditionalBlock block) {
         if (block instanceof PreprocessorXmlIfElseBlock xmlIfElseBlock) {
             return xmlIfElseBlock.getIfBranch();
         }
@@ -67,13 +67,22 @@ public class PreprocessorPsiUtil {
             return semicolonIfElseBlock.getIfBranch();
         }
 
-        throw new IllegalArgumentException("Unknown if block type: " + block.getClass().getName());
+        if (block instanceof PreprocessorXmlIfBlock xmlIfBlock) {
+            return xmlIfBlock;
+        }
+
+        if (block instanceof PreprocessorHashtagIfBlock hashtagIfBlock) {
+            return hashtagIfBlock;
+        }
+
+        if (block instanceof PreprocessorSemicolonIfBlock semicolonIfBlock) {
+            return semicolonIfBlock;
+        }
+
+        return null;
     }
 
-    public static String evaluate(@NotNull PreprocessorTextBlock block, Map<String, Object> ignore) {
-        return block.getText();
-    }
-    private static PsiElement getElseBranch(PreprocessorIfElseBlock block) {
+    public static PsiElement elseBranch(ConditionalBlock block) {
         if (block instanceof PreprocessorXmlIfElseBlock xmlIfElseBlock) {
             return xmlIfElseBlock.getElseBranch();
         }
@@ -89,6 +98,11 @@ public class PreprocessorPsiUtil {
         // null psi element
         return null;
     }
+
+    public static String evaluate(@NotNull PreprocessorTextBlock block, Map<String, Object> ignore) {
+        return block.getText();
+    }
+
 
     private static String getIfCondition(@NotNull PsiElement block) {
         if (block instanceof PreprocessorXmlIfBlock xmlIfBlock) {

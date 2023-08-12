@@ -10,4 +10,8 @@ public interface PreprocessorIfElseBlock extends ConditionalBlock, PreprocessorE
 
   @NotNull String evaluate(Map<String, Object> symbols);
 
+  @NotNull PsiElement ifBranch();
+
+  PsiElement elseBranch();
+
 }
