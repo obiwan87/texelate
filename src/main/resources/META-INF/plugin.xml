@@ -52,7 +52,10 @@
 
         <lang.syntaxHighlighterFactory language="Microbool"
                                        implementationClass="com.lasagnerd.texelate.microbool.MicroboolSyntaxHighlighterFactory"/>
+
         <annotator language="XML" implementationClass="com.lasagnerd.texelate.injection.IfStatementAnnotator"/>
+        <annotator language="yaml" implementationClass="com.lasagnerd.texelate.injection.IfStatementAnnotator"/>
+
         <psi.referenceContributor implementation="com.lasagnerd.texelate.completion.PropertiesReferenceContributor"
                                   language="Microbool"/>
         <completion.contributor language="Microbool"
