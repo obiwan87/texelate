@@ -1,12 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package com.lasagnerd.texelate.ifblocks.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import java.util.List;
+import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.lasagnerd.texelate.ifblocks.psi.PreprocessorIfBlock;
-import com.lasagnerd.texelate.ifblocks.psi.PreprocessorVisitor;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.psi.util.PsiTreeUtil;
+import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.lasagnerd.texelate.ifblocks.psi.*;
+import java.util.Map;
 
 public abstract class PreprocessorIfBlockImpl extends ASTWrapperPsiElement implements PreprocessorIfBlock {
 
@@ -22,6 +26,11 @@ public abstract class PreprocessorIfBlockImpl extends ASTWrapperPsiElement imple
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof PreprocessorVisitor) accept((PreprocessorVisitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  public @NotNull String evaluate(Map<String, Object> symbols) {
+    return PreprocessorPsiUtil.evaluate(this, symbols);
   }
 
 }

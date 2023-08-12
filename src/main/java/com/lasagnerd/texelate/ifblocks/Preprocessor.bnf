@@ -21,21 +21,48 @@
     HASHTAG_CLOSING_IF='regexp:#\?endif[^\n\r]*'
     SEMICOLON_OPENING_IF='regexp:;\?if[^\n\r]*'
     SEMICOLON_CLOSING_IF='regexp:;\?endif[^\n\r]*'
+    XML_ELSE='regexp:<!--\?else[^\r\n]*-->'
+    SEMICOLON_ELSE='regexp:;\?else[^\n\r]*'
+    HASHTAG_ELSE='regexp:#\?else[^\n\r]*'
     ANY = 'regexp:.+'
   ]
 
   extends(".*if_block") = if_block
+  extends(".*if_else_block") = if_else_block
+
+  implements("if_block|if_else_block|text_block")="com.lasagnerd.texelate.ifblocks.psi.PreprocessorEvaluableBlock"
+  implements("if_block|if_else_block")="com.lasagnerd.texelate.ifblocks.psi.ConditionalBlock"
+  psiImplUtilClass="com.lasagnerd.texelate.ifblocks.psi.PreprocessorPsiUtil"
 }
 
 preprocessorFile ::= item*
-private item ::= text_block | if_block
-if_block ::=  xml_if_block |
-              hashtag_if_block |
-              semicolon_if_block
+private item ::= text_block | if_block | if_else_block
+
+// rule for optional else block
+ if_block ::=  xml_if_block |
+               hashtag_if_block |
+               semicolon_if_block {
+                methods=[evaluate]
+               }
+
+if_else_block ::= xml_if_else_block |
+                  hashtag_if_else_block |
+                  semicolon_if_else_block {
+                     methods=[evaluate]
+                 }
+
 
 semicolon_if_block ::= SEMICOLON_OPENING_IF item* SEMICOLON_CLOSING_IF
 hashtag_if_block ::= HASHTAG_OPENING_IF item* HASHTAG_CLOSING_IF
 xml_if_block ::= XML_OPENING_IF item* XML_CLOSING_IF
 
-text_block ::= (WHITE_SPACE | ANY)+
+xml_if_else_block ::= XML_OPENING_IF if_branch XML_ELSE else_branch XML_CLOSING_IF
+hashtag_if_else_block ::= HASHTAG_OPENING_IF if_branch HASHTAG_ELSE else_branch HASHTAG_CLOSING_IF
+semicolon_if_else_block ::= SEMICOLON_OPENING_IF if_branch SEMICOLON_ELSE else_branch SEMICOLON_CLOSING_IF
+if_branch ::= item*
+else_branch ::= item*
+
+text_block ::= (WHITE_SPACE | ANY)+ {
+    methods=[evaluate]
+}
 

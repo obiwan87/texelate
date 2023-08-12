@@ -1,20 +1,14 @@
 // This is a generated file. Not intended for manual editing.
 package com.lasagnerd.texelate.ifblocks.psi.impl;
 
+import java.util.List;
+import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.lasagnerd.texelate.ifblocks.psi.PreprocessorHashtagIfBlock;
-import com.lasagnerd.texelate.ifblocks.psi.PreprocessorIfBlock;
-import com.lasagnerd.texelate.ifblocks.psi.PreprocessorTextBlock;
-import com.lasagnerd.texelate.ifblocks.psi.PreprocessorVisitor;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-
-import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.HASHTAG_CLOSING_IF;
-import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.HASHTAG_OPENING_IF;
+import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.*;
+import com.lasagnerd.texelate.ifblocks.psi.*;
 
 public class PreprocessorHashtagIfBlockImpl extends PreprocessorIfBlockImpl implements PreprocessorHashtagIfBlock {
 
@@ -41,6 +35,12 @@ public class PreprocessorHashtagIfBlockImpl extends PreprocessorIfBlockImpl impl
 
   @Override
   @NotNull
+  public List<PreprocessorIfElseBlock> getIfElseBlockList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorIfElseBlock.class);
+  }
+
+  @Override
+  @NotNull
   public List<PreprocessorTextBlock> getTextBlockList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorTextBlock.class);
   }
@@ -57,13 +57,4 @@ public class PreprocessorHashtagIfBlockImpl extends PreprocessorIfBlockImpl impl
     return findNotNullChildByType(HASHTAG_OPENING_IF);
   }
 
-  @Override
-  public String getOpeningStatement() {
-    return getHashtagOpeningIf().getText();
-  }
-
-  @Override
-  public String getClosingStatement() {
-    return getHashtagClosingIf().getText();
-  }
 }

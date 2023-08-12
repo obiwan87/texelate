@@ -6,8 +6,8 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import java.util.Map;
 
-public interface PreprocessorTextBlock extends PreprocessorEvaluableBlock {
+public interface PreprocessorIfElseBlock extends ConditionalBlock, PreprocessorEvaluableBlock {
 
-  String evaluate(Map<String, Object> ignore);
+  @NotNull String evaluate(Map<String, Object> symbols);
 
 }

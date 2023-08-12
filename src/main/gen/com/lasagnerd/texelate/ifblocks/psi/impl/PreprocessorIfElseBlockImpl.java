@@ -12,14 +12,14 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.lasagnerd.texelate.ifblocks.psi.*;
 import java.util.Map;
 
-public class PreprocessorTextBlockImpl extends ASTWrapperPsiElement implements PreprocessorTextBlock {
+public abstract class PreprocessorIfElseBlockImpl extends ASTWrapperPsiElement implements PreprocessorIfElseBlock {
 
-  public PreprocessorTextBlockImpl(@NotNull ASTNode node) {
+  public PreprocessorIfElseBlockImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PreprocessorVisitor visitor) {
-    visitor.visitTextBlock(this);
+    visitor.visitIfElseBlock(this);
   }
 
   @Override
@@ -29,8 +29,8 @@ public class PreprocessorTextBlockImpl extends ASTWrapperPsiElement implements P
   }
 
   @Override
-  public String evaluate(Map<String, Object> ignore) {
-    return PreprocessorPsiUtil.evaluate(this, ignore);
+  public @NotNull String evaluate(Map<String, Object> symbols) {
+    return PreprocessorPsiUtil.evaluate(this, symbols);
   }
 
 }

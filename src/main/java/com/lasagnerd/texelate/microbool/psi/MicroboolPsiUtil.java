@@ -37,7 +37,8 @@ public class MicroboolPsiUtil {
         return !asBoolean(evaluate(un.getExpression(), symbols));
     }
 
-    public static Object evaluateBinaryExpression(@NotNull MicroboolBinaryExpression expression, Map<String, Object> symbols) {
+    public static Object evaluateBinaryExpression(@NotNull MicroboolBinaryExpression expression,
+                                                  Map<String, Object> symbols) {
         MicroboolBinaryOperator operator = expression.getBinaryOperator();
         Object left = evaluate(getLeft(expression), symbols);
         Object right = evaluate(getRight(expression), symbols);
@@ -62,8 +63,7 @@ public class MicroboolPsiUtil {
             return ((Number) value).intValue() != 0;
         } else if (value instanceof String) {
             return !((String) value).isEmpty();
-        } else {
-            throw new RuntimeException("Cannot convert " + value + " to boolean");
         }
+        return false;
     }
 }

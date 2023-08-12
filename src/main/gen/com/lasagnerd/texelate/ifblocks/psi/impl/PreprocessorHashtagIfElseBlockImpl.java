@@ -10,15 +10,15 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.*;
 import com.lasagnerd.texelate.ifblocks.psi.*;
 
-public class PreprocessorXmlIfBlockImpl extends PreprocessorIfBlockImpl implements PreprocessorXmlIfBlock {
+public class PreprocessorHashtagIfElseBlockImpl extends PreprocessorIfElseBlockImpl implements PreprocessorHashtagIfElseBlock {
 
-  public PreprocessorXmlIfBlockImpl(@NotNull ASTNode node) {
+  public PreprocessorHashtagIfElseBlockImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   @Override
   public void accept(@NotNull PreprocessorVisitor visitor) {
-    visitor.visitXmlIfBlock(this);
+    visitor.visitHashtagIfElseBlock(this);
   }
 
   @Override
@@ -29,32 +29,32 @@ public class PreprocessorXmlIfBlockImpl extends PreprocessorIfBlockImpl implemen
 
   @Override
   @NotNull
-  public List<PreprocessorIfBlock> getIfBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorIfBlock.class);
+  public PreprocessorElseBranch getElseBranch() {
+    return findNotNullChildByClass(PreprocessorElseBranch.class);
   }
 
   @Override
   @NotNull
-  public List<PreprocessorIfElseBlock> getIfElseBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorIfElseBlock.class);
+  public PreprocessorIfBranch getIfBranch() {
+    return findNotNullChildByClass(PreprocessorIfBranch.class);
   }
 
   @Override
   @NotNull
-  public List<PreprocessorTextBlock> getTextBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorTextBlock.class);
+  public PsiElement getHashtagClosingIf() {
+    return findNotNullChildByType(HASHTAG_CLOSING_IF);
   }
 
   @Override
   @NotNull
-  public PsiElement getXmlClosingIf() {
-    return findNotNullChildByType(XML_CLOSING_IF);
+  public PsiElement getHashtagElse() {
+    return findNotNullChildByType(HASHTAG_ELSE);
   }
 
   @Override
   @NotNull
-  public PsiElement getXmlOpeningIf() {
-    return findNotNullChildByType(XML_OPENING_IF);
+  public PsiElement getHashtagOpeningIf() {
+    return findNotNullChildByType(HASHTAG_OPENING_IF);
   }
 
 }

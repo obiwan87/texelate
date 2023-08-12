@@ -10,15 +10,15 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.*;
 import com.lasagnerd.texelate.ifblocks.psi.*;
 
-public class PreprocessorXmlIfBlockImpl extends PreprocessorIfBlockImpl implements PreprocessorXmlIfBlock {
+public class PreprocessorSemicolonIfElseBlockImpl extends PreprocessorIfElseBlockImpl implements PreprocessorSemicolonIfElseBlock {
 
-  public PreprocessorXmlIfBlockImpl(@NotNull ASTNode node) {
+  public PreprocessorSemicolonIfElseBlockImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   @Override
   public void accept(@NotNull PreprocessorVisitor visitor) {
-    visitor.visitXmlIfBlock(this);
+    visitor.visitSemicolonIfElseBlock(this);
   }
 
   @Override
@@ -29,32 +29,32 @@ public class PreprocessorXmlIfBlockImpl extends PreprocessorIfBlockImpl implemen
 
   @Override
   @NotNull
-  public List<PreprocessorIfBlock> getIfBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorIfBlock.class);
+  public PreprocessorElseBranch getElseBranch() {
+    return findNotNullChildByClass(PreprocessorElseBranch.class);
   }
 
   @Override
   @NotNull
-  public List<PreprocessorIfElseBlock> getIfElseBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorIfElseBlock.class);
+  public PreprocessorIfBranch getIfBranch() {
+    return findNotNullChildByClass(PreprocessorIfBranch.class);
   }
 
   @Override
   @NotNull
-  public List<PreprocessorTextBlock> getTextBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorTextBlock.class);
+  public PsiElement getSemicolonClosingIf() {
+    return findNotNullChildByType(SEMICOLON_CLOSING_IF);
   }
 
   @Override
   @NotNull
-  public PsiElement getXmlClosingIf() {
-    return findNotNullChildByType(XML_CLOSING_IF);
+  public PsiElement getSemicolonElse() {
+    return findNotNullChildByType(SEMICOLON_ELSE);
   }
 
   @Override
   @NotNull
-  public PsiElement getXmlOpeningIf() {
-    return findNotNullChildByType(XML_OPENING_IF);
+  public PsiElement getSemicolonOpeningIf() {
+    return findNotNullChildByType(SEMICOLON_OPENING_IF);
   }
 
 }

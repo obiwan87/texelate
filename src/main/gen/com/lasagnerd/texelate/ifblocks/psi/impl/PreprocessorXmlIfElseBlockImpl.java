@@ -10,15 +10,15 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.*;
 import com.lasagnerd.texelate.ifblocks.psi.*;
 
-public class PreprocessorXmlIfBlockImpl extends PreprocessorIfBlockImpl implements PreprocessorXmlIfBlock {
+public class PreprocessorXmlIfElseBlockImpl extends PreprocessorIfElseBlockImpl implements PreprocessorXmlIfElseBlock {
 
-  public PreprocessorXmlIfBlockImpl(@NotNull ASTNode node) {
+  public PreprocessorXmlIfElseBlockImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   @Override
   public void accept(@NotNull PreprocessorVisitor visitor) {
-    visitor.visitXmlIfBlock(this);
+    visitor.visitXmlIfElseBlock(this);
   }
 
   @Override
@@ -29,26 +29,26 @@ public class PreprocessorXmlIfBlockImpl extends PreprocessorIfBlockImpl implemen
 
   @Override
   @NotNull
-  public List<PreprocessorIfBlock> getIfBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorIfBlock.class);
+  public PreprocessorElseBranch getElseBranch() {
+    return findNotNullChildByClass(PreprocessorElseBranch.class);
   }
 
   @Override
   @NotNull
-  public List<PreprocessorIfElseBlock> getIfElseBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorIfElseBlock.class);
-  }
-
-  @Override
-  @NotNull
-  public List<PreprocessorTextBlock> getTextBlockList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorTextBlock.class);
+  public PreprocessorIfBranch getIfBranch() {
+    return findNotNullChildByClass(PreprocessorIfBranch.class);
   }
 
   @Override
   @NotNull
   public PsiElement getXmlClosingIf() {
     return findNotNullChildByType(XML_CLOSING_IF);
+  }
+
+  @Override
+  @NotNull
+  public PsiElement getXmlElse() {
+    return findNotNullChildByType(XML_ELSE);
   }
 
   @Override

@@ -8,17 +8,17 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.lasagnerd.texelate.ifblocks.psi.PreprocessorTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.lasagnerd.texelate.ifblocks.psi.*;
 
-public class PreprocessorXmlIfBlockImpl extends PreprocessorIfBlockImpl implements PreprocessorXmlIfBlock {
+public class PreprocessorElseBranchImpl extends ASTWrapperPsiElement implements PreprocessorElseBranch {
 
-  public PreprocessorXmlIfBlockImpl(@NotNull ASTNode node) {
+  public PreprocessorElseBranchImpl(@NotNull ASTNode node) {
     super(node);
   }
 
-  @Override
   public void accept(@NotNull PreprocessorVisitor visitor) {
-    visitor.visitXmlIfBlock(this);
+    visitor.visitElseBranch(this);
   }
 
   @Override
@@ -43,18 +43,6 @@ public class PreprocessorXmlIfBlockImpl extends PreprocessorIfBlockImpl implemen
   @NotNull
   public List<PreprocessorTextBlock> getTextBlockList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, PreprocessorTextBlock.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getXmlClosingIf() {
-    return findNotNullChildByType(XML_CLOSING_IF);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getXmlOpeningIf() {
-    return findNotNullChildByType(XML_OPENING_IF);
   }
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PreprocessorXmlIfBlock extends PreprocessorIfBlock {
+public interface PreprocessorElseBranch extends PsiElement {
 
   @NotNull
   List<PreprocessorIfBlock> getIfBlockList();
@@ -15,11 +15,5 @@ public interface PreprocessorXmlIfBlock extends PreprocessorIfBlock {
 
   @NotNull
   List<PreprocessorTextBlock> getTextBlockList();
-
-  @NotNull
-  PsiElement getXmlClosingIf();
-
-  @NotNull
-  PsiElement getXmlOpeningIf();
 
 }

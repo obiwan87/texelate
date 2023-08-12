@@ -3,7 +3,6 @@ package com.lasagnerd.texelate.injection;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,10 +10,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class IfBlocksFinder {
-    @Value
-    public static class IfBlock<T> {
-        T openingIf;
-        T closingIf;
+    public record IfBlock<T>(T openingIf, T closingIf) {
     }
 
     public static List<IfBlock<PsiElement>> findIfBlocks(PsiElement root) {

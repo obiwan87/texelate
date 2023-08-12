@@ -23,8 +23,8 @@ public class IfStatementFoldingBuilder extends FoldingBuilderEx implements DumbA
         List<IfBlock<PsiElement>> ifBlocks = IfBlocksFinder.findIfBlocks(root);
 
         for (IfBlock<PsiElement> ifBlock : ifBlocks) {
-            PsiElement openingIf = ifBlock.getOpeningIf();
-            PsiElement closingIf = ifBlock.getClosingIf();
+            PsiElement openingIf = ifBlock.openingIf();
+            PsiElement closingIf = ifBlock.closingIf();
             FoldingGroup group = FoldingGroup.newGroup("if-statement");
             TextRange textRange = new TextRange(openingIf.getTextRange().getEndOffset(),
                     closingIf.getTextRange().getEndOffset());

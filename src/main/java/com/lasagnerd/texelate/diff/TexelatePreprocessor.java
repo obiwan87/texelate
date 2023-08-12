@@ -8,6 +8,8 @@ import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.lasagnerd.texelate.completion.PropertiesUtils;
+import com.lasagnerd.texelate.ifblocks.PreprocessorFile;
+import com.lasagnerd.texelate.ifblocks.psi.PreprocessorEvaluableBlock;
 import com.lasagnerd.texelate.injection.IfStatementTokenPatterns;
 import com.lasagnerd.texelate.injection.IfStatementTokenPatterns.IfStatement;
 import com.lasagnerd.texelate.microbool.MicroboolLanguage;
@@ -25,7 +27,7 @@ public class TexelatePreprocessor {
     public static CharSequence preprocess(String environment, String text, PsiElement root) {
 
         Language preprocessor = Objects.requireNonNull(findLanguageByID("Preprocessor"));
-        PsiFile psiFile = PsiFileFactory
+        PreprocessorFile psiFile = (PreprocessorFile) PsiFileFactory
                 .getInstance(root.getProject())
                 .createFileFromText(preprocessor, text);
         try {
@@ -48,13 +50,19 @@ public class TexelatePreprocessor {
 
 
     private static class Interpreter {
-        private static String interpret(String environment, PsiFile psiFile) {
+        private static String interpret(String environment, PreprocessorFile psiFile) {
+            StringBuilder text = new StringBuilder();
             Interpreter interpreter = new Interpreter(environment, psiFile.getProject());
             for (PsiElement child : psiFile.getChildren()) {
-                interpreter.processChild(child);
+                if (child instanceof PreprocessorEvaluableBlock block) {
+                    text.append(block.evaluate(interpreter.variables));
+                } else {
+                    text.append(child.getText());
+                }
             }
 
-            return replaceVariables(interpreter.text, interpreter.variables);
+
+            return replaceVariables(text, interpreter.variables);
         }
 
         StringBuilder text = new StringBuilder();
@@ -99,12 +107,12 @@ public class TexelatePreprocessor {
             }
 
             if (psiElement instanceof PreprocessorIfBlock preprocessorIfBlock) {
-                String openingIfStatementText = preprocessorIfBlock.getOpeningStatement();
+                String openingIfStatementText = "";
 
                 Optional<IfStatement> ifStatementOptional = IfStatementTokenPatterns.parseOpeningIfStatement(openingIfStatementText);
                 if (ifStatementOptional.isPresent()) {
                     IfStatement ifStatement = ifStatementOptional.get();
-                    String expression = ifStatement.getExpression().trim();
+                    String expression = ifStatement.expression().trim();
 
                     PsiFile microboolPsiFile = PsiFileFactory.getInstance(project).createFileFromText(MicroboolLanguage.INSTANCE, expression);
                     if (microboolPsiFile instanceof MicroboolFile microboolFile) {
@@ -142,6 +150,15 @@ public class TexelatePreprocessor {
             }
 
             return currentText;
+        }
+    }
+
+    public static boolean evaluate(Project project, Map<String, Object> variables, String expression) {
+        PsiFile microboolPsiFile = PsiFileFactory.getInstance(project).createFileFromText(MicroboolLanguage.INSTANCE, expression);
+        if (microboolPsiFile instanceof MicroboolFile microboolFile) {
+            return TexelatePreprocessor.interpret(variables, microboolFile);
+        } else {
+            throw new IllegalStateException(String.format("'%s' in if statement valid Microbool Expression", expression));
         }
     }
 }

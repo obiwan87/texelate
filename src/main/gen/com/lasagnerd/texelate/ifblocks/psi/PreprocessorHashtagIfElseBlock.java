@@ -5,19 +5,19 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PreprocessorHashtagIfBlock extends PreprocessorIfBlock {
+public interface PreprocessorHashtagIfElseBlock extends PreprocessorIfElseBlock {
 
   @NotNull
-  List<PreprocessorIfBlock> getIfBlockList();
+  PreprocessorElseBranch getElseBranch();
 
   @NotNull
-  List<PreprocessorIfElseBlock> getIfElseBlockList();
-
-  @NotNull
-  List<PreprocessorTextBlock> getTextBlockList();
+  PreprocessorIfBranch getIfBranch();
 
   @NotNull
   PsiElement getHashtagClosingIf();
+
+  @NotNull
+  PsiElement getHashtagElse();
 
   @NotNull
   PsiElement getHashtagOpeningIf();
