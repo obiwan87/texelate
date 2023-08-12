@@ -4,7 +4,10 @@ package com.lasagnerd.texelate.microbool.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import java.util.Map;
 
-public interface MicroboolExpression extends PsiElement {
+public interface MicroboolExpression extends EvaluableMicroboolExpression {
+
+  Object evaluate(Map<String, Object> symbols);
 
 }

@@ -31,15 +31,26 @@
   extends('.*_expression.*') = expression
   extends('^binary.*') = binary_operator
   extends('^unary.*') = unary_operator
+
+  mixin("reference_expression")="com.lasagnerd.texelate.microbool.psi.MicroboolReferenceExpressionMixin"
+
+  psiImplUtilClass="com.lasagnerd.texelate.microbool.psi.MicroboolPsiUtil"
+  implements(".*expression")="com.lasagnerd.texelate.microbool.psi.EvaluableMicroboolExpression"
 }
+
+
 
 microboolFile ::= expression
 
 expression ::= binary_expression
         | unary_expression
-        | primary
+        | primary {
+    methods=[evaluate]
+}
+
 
 binary_expression                     ::= expression binary_operator expression
+
 binary_operator                       ::= binary_operator_or | binary_operator_and | binary_operator_equality | binary_operator_inequality
 binary_operator_or                    ::= OPERATOR_OR
 binary_operator_and                   ::= OPERATOR_AND

@@ -11,6 +11,7 @@ import com.lasagnerd.texelate.completion.PropertiesUtils;
 import com.lasagnerd.texelate.injection.IfStatementTokenPatterns;
 import com.lasagnerd.texelate.injection.IfStatementTokenPatterns.IfStatement;
 import com.lasagnerd.texelate.microbool.MicroboolLanguage;
+import com.lasagnerd.texelate.microbool.psi.MicroboolExpression;
 import com.lasagnerd.texelate.microbool.psi.MicroboolFile;
 import com.lasagnerd.texelate.ifblocks.psi.PreprocessorIfBlock;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 import static com.intellij.lang.Language.findLanguageByID;
+import static com.lasagnerd.texelate.microbool.psi.MicroboolPsiUtil.asBoolean;
 
 public class TexelatePreprocessor {
     public static CharSequence preprocess(String environment, String text, PsiElement root) {
@@ -31,6 +33,17 @@ public class TexelatePreprocessor {
         } catch (RuntimeException e) {
             return text;
         }
+    }
+
+    public static boolean interpret(Map<String, Object> variables, MicroboolFile microboolFile) {
+        if (microboolFile.getFirstChild() instanceof MicroboolExpression microboolExpression) {
+            try {
+                return asBoolean(microboolExpression.evaluate(variables));
+            } catch (Exception e) {
+                throw new RuntimeException("Interpretation failed", e);
+            }
+        }
+        return false;
     }
 
 
@@ -94,9 +107,9 @@ public class TexelatePreprocessor {
                     String expression = ifStatement.getExpression().trim();
 
                     PsiFile microboolPsiFile = PsiFileFactory.getInstance(project).createFileFromText(MicroboolLanguage.INSTANCE, expression);
-                    if (microboolPsiFile instanceof MicroboolFile) {
-                        boolean interpretedValue = TexelateInterpreter.interpret(variables, (MicroboolFile) microboolPsiFile);
-                                                                        if (interpretedValue) {
+                    if (microboolPsiFile instanceof MicroboolFile microboolFile) {
+                        boolean interpretedValue = TexelatePreprocessor.interpret(variables, microboolFile);
+                        if (interpretedValue) {
                             for (PsiElement child : preprocessorIfBlock.getChildren()) {
                                 processChild(child);
                             }

@@ -40,7 +40,7 @@ public class MicroboolVisitor extends PsiElementVisitor {
   }
 
   public void visitExpression(@NotNull MicroboolExpression o) {
-    visitPsiElement(o);
+    visitEvaluableMicroboolExpression(o);
   }
 
   public void visitIntLiteralExpression(@NotNull MicroboolIntLiteralExpression o) {
@@ -65,6 +65,10 @@ public class MicroboolVisitor extends PsiElementVisitor {
 
   public void visitUnaryOperatorNot(@NotNull MicroboolUnaryOperatorNot o) {
     visitUnaryOperator(o);
+  }
+
+  public void visitEvaluableMicroboolExpression(@NotNull EvaluableMicroboolExpression o) {
+    visitElement(o);
   }
 
   public void visitPsiElement(@NotNull PsiElement o) {
