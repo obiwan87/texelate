@@ -2,6 +2,7 @@ package com.lasagnerd.texelate.diff;
 
 import com.intellij.lang.Language;
 import com.intellij.lang.properties.psi.Property;
+import com.intellij.lang.xml.XMLLanguage;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -13,7 +14,28 @@ import com.lasagnerd.texelate.microbool.MicroboolLanguage;
 import com.lasagnerd.texelate.microbool.psi.MicroboolExpression;
 import com.lasagnerd.texelate.microbool.psi.MicroboolFile;
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -21,14 +43,19 @@ import static com.intellij.lang.Language.findLanguageByID;
 import static com.lasagnerd.texelate.microbool.psi.MicroboolPsiUtil.asBoolean;
 
 public class TexelatePreprocessor {
-    public static CharSequence preprocess(String environment, String text, PsiElement root) {
+    public static CharSequence preprocess(String originalFilePath, String environment, String text, PsiElement root) {
 
-        Language preprocessor = Objects.requireNonNull(findLanguageByID("Preprocessor"));
+        Language preprocessorLanguage = Objects.requireNonNull(findLanguageByID("Preprocessor"));
         PreprocessorFile psiFile = (PreprocessorFile) PsiFileFactory
                 .getInstance(root.getProject())
-                .createFileFromText(preprocessor, text);
+                .createFileFromText(preprocessorLanguage, text);
         try {
-            return Interpreter.interpret(environment, psiFile);
+            String preprocessed = Interpreter.interpret(environment, psiFile);
+
+            if(root.getLanguage().equals(XMLLanguage.INSTANCE)) {
+                return XIncludeReplacer.process(originalFilePath, preprocessed);
+            }
+            return preprocessed;
         } catch (RuntimeException e) {
             return text;
         }
@@ -188,6 +215,129 @@ public class TexelatePreprocessor {
             }
 
             return currentText;
+        }
+    }
+}
+
+
+class XIncludeReplacer {
+    public static String process(String path, String xml) {
+        String absolutePath = Path.of(path).getParent().toFile().getAbsolutePath();
+        return new XIncludeReplacer().doProcess(absolutePath, xml);
+    }
+
+    Map<String, Document> hrefCache = new HashMap<>();
+
+    private XIncludeReplacer() {
+
+    }
+
+    public String doProcess(String path, String xml) {
+        try {
+            Document target = documentFromXml(xml);
+
+            // Find all xi:include elements with href attribute and xPointer attribute
+            XPath xPath = getXPath();
+            var nodes = (NodeList) xPath.compile("//xi:include[@href and @xpointer]")
+                    .evaluate(target, XPathConstants.NODESET);
+
+            // Iterate over all nodes
+            for (int i = 0; i < nodes.getLength(); i++) {
+                var node = nodes.item(i);
+                var href = node.getAttributes().getNamedItem("href").getNodeValue();
+                var id = node.getAttributes().getNamedItem("xpointer").getNodeValue();
+
+                // compute normalized path to target file from href
+                var libPath = Path.of(path, href).normalize().toFile().getAbsolutePath();
+                var libDoc = hrefCache.computeIfAbsent(libPath, XIncludeReplacer::readXmlFile);
+
+                var libNode = (Node) xPath.compile("//*[@xml:id=\"%s\"]"
+                                .formatted(id))
+                        .evaluate(libDoc, XPathConstants.NODE);
+
+                if (libNode != null) {
+                    Node newChild = target.importNode(libNode, true);
+                    newChild.getAttributes().removeNamedItem("xml:id");
+                    node.getParentNode().replaceChild(newChild, node);
+                }
+            }
+
+            return asXmlString(target);
+
+        } catch (XPathExpressionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Document readXmlFile(String path) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            return builder.parse(path);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Document documentFromXml(String xml) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // String to InputStream
+            InputStream is = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
+            return builder.parse(is);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String asXmlString(Document doc) {
+        try {
+            DOMSource domSource = new DOMSource(doc);
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.transform(domSource, result);
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            return writer.toString().replaceAll("\r", "");
+        } catch (TransformerException ex) {
+
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static XPath getXPath() {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        // Set namespaces
+        XPath xPath = xPathfactory.newXPath();
+        xPath.setNamespaceContext(new MyNamespaceContext());
+        return xPath;
+    }
+
+    public static class MyNamespaceContext implements NamespaceContext {
+
+        static Map<String, String> PREF_MAP = Map.of("xi", "http://www.w3.org/2001/XInclude", "xml", "http://www.w3.org/XML/1998/namespace");
+        static Map<String, String> NS_MAP = Map.of("http://www.w3.org/2001/XInclude", "xi", "http://www.w3.org/XML/1998/namespace", "xml");
+        public MyNamespaceContext() {
+
+        }
+        @Override
+        public String getNamespaceURI(String prefix) {
+            return PREF_MAP.get(prefix);
+        }
+
+        @Override
+        public String getPrefix(String namespaceURI) {
+            return NS_MAP.get(namespaceURI);
+        }
+
+        @Override
+        public Iterator<String> getPrefixes(String namespaceURI) {
+            return List.of(NS_MAP.get(namespaceURI)).iterator();
         }
     }
 }

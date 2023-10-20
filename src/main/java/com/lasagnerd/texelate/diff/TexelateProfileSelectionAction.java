@@ -21,16 +21,19 @@ public class TexelateProfileSelectionAction extends TextDiffViewerUtil.ComboBoxS
 
     private final FileType fileType;
     private final Project project;
+    private final String originalFilePath;
     private final DocumentEx originalDocument;
     private final DocumentEx preprocessedDocument;
 
     public TexelateProfileSelectionAction(FileType fileType,
                                           @NotNull Project project,
+                                          String originalFilePath,
                                           DocumentEx originalDocument,
                                           DocumentEx preprocessedDocument) {
         this.fileType = fileType;
 
         this.project = project;
+        this.originalFilePath = originalFilePath;
         this.originalDocument = originalDocument;
         this.preprocessedDocument = preprocessedDocument;
     }
@@ -88,8 +91,10 @@ public class TexelateProfileSelectionAction extends TextDiffViewerUtil.ComboBoxS
             if (eventProject == null)
                 return;
 
-            TexelateDiffViewer.runDiff(eventProject,
+            TexelateDiffViewer.runDiff(
+                    eventProject,
                     fileType,
+                    originalFilePath,
                     originalDocument,
                     preprocessedDocument,
                     option);
